@@ -1,7 +1,7 @@
 import { cuid2 } from "drizzle-cuid2/postgres";
 import { pgTable, varchar } from "drizzle-orm/pg-core";
 
-export const newsPostsTable = pgTable("news_posts", {
+export const postsTable = pgTable("posts", {
   id: cuid2("id").defaultRandom().primaryKey(),
   source: varchar({ length: 255 }).notNull(),
   title: varchar({ length: 500 }).notNull(),

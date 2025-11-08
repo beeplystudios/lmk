@@ -1,7 +1,7 @@
 import { ChatOpenAI } from "@langchain/openai";
 import { createAgent } from "langchain";
 import z from "zod";
-import type { RawNewsPost } from "./ingest";
+import type { RawPost } from "./ingest";
 
 export const EXAMPLE_RAW_NEWS_POST = [
   {
@@ -33,7 +33,7 @@ export const EXAMPLE_RAW_NEWS_POST = [
     image:
       "https://static01.nyt.com/images/2025/11/07/multimedia/dc-pardons2-qcbj/dc-pardons2-qcbj-mediumSquareAt3X.jpg",
   },
-] satisfies RawNewsPost[];
+] satisfies RawPost[];
 
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 if (!OPENAI_API_KEY) throw "process.env.OPENAI_API_KEY is not set";
@@ -67,7 +67,7 @@ const agent = createAgent({
   responseFormat: betterHeadlineSchema,
 });
 
-export const expandRawNewsPost = async (rawNewsPost: RawNewsPost) => {
+export const expandRawNewsPost = async (rawNewsPost: RawPost) => {
   const userPrompt = `Title: ${rawNewsPost.title}
 Description: ${rawNewsPost.description}
   

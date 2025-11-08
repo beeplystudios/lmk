@@ -5,7 +5,7 @@
 import { Index } from "@pinecone-database/pinecone";
 import { eq } from "drizzle-orm";
 import { db } from "../db";
-import { newsPostsTable } from "../db/schema";
+import { postsTable } from "../db/schema";
 import { INDEX_NAME, pc } from "../pinecone";
 import { expandRawNewsPost } from "./expand";
 import { FeedWithTransformer } from "./feeds";
@@ -13,7 +13,7 @@ import { FeedWithTransformer } from "./feeds";
 /**
  * A news post directly extracted from an RSS feed.
  */
-export interface RawNewsPost {
+export interface RawPost {
   title: string;
   /** Where the post came from. e.g. "NYTimes", "Reuters", "Associated Press" */
   source: string;
@@ -27,7 +27,7 @@ export interface RawNewsPost {
 /**
  * The content of a NewsPost that is actually stored in the vector database.
  */
-export interface IngestibleNewsPost {
+export interface IngestiblePost {
   title: string;
   description: string;
 
@@ -62,9 +62,9 @@ export const ingestTransformer = async (feed: FeedWithTransformer) => {
   const results = await feed.transformer(feed.url);
 
   const BATCH_SIZE = 50;
-  const batches: IngestibleNewsPost[][] = [];
+  const batches: IngestiblePost[][] = [];
 
-  const insertBatched = (upsertedPost: IngestibleNewsPost) => {
+  const insertBatched = (upsertedPost: IngestiblePost) => {
     if (
       batches.length === 0 ||
       batches[batches.length - 1].length >= BATCH_SIZE
@@ -76,8 +76,8 @@ export const ingestTransformer = async (feed: FeedWithTransformer) => {
   for (const rawPost of results) {
     const post = await db
       .select()
-      .from(newsPostsTable)
-      .where(eq(newsPostsTable.link, rawPost.link))
+      .from(postsTable)
+      .where(eq(postsTable.link, rawPost.link))
       .limit(1)
       .then((res) => res[0]);
 
@@ -100,9 +100,9 @@ export const ingestTransformer = async (feed: FeedWithTransformer) => {
     const betterPost = await expandRawNewsPost(rawPost);
     console.log(betterPost);
 
-    // Upsert into newsPostsTable
+    // Upsert into posts
     const existing = await db
-      .insert(newsPostsTable)
+      .insert(postsTable)
       .values({
         source: rawPost.source,
         title: rawPost.title,
@@ -112,7 +112,7 @@ export const ingestTransformer = async (feed: FeedWithTransformer) => {
         image: rawPost.image,
       })
       .onConflictDoUpdate({
-        target: newsPostsTable.link,
+        target: postsTable.link,
         set: {
           source: rawPost.source,
           title: rawPost.title,
@@ -120,7 +120,7 @@ export const ingestTransformer = async (feed: FeedWithTransformer) => {
           image: rawPost.image,
         },
       })
-      .returning({ id: newsPostsTable.id })
+      .returning({ id: postsTable.id })
       .then((res) => res[0]);
 
     // Batch updates before sending to Pinecone
@@ -130,7 +130,7 @@ export const ingestTransformer = async (feed: FeedWithTransformer) => {
       description: rawPost.description,
       title: rawPost.title,
       source: rawPost.source,
-    } satisfies IngestibleNewsPost;
+    } satisfies IngestiblePost;
 
     console.log(
       "ingest: processed post",
@@ -146,11 +146,14 @@ export const ingestTransformer = async (feed: FeedWithTransformer) => {
 
   for (const [i, batch] of batches.entries()) {
     console.log(`ingest: upserting batch ${i + 1}/${batches.length}...`);
-    await pc.index(INDEX_NAME).upsertRecords([
-      ...batch.map((post) => ({
-        ...post,
-      })),
-    ]);
+    await pc
+      .index(INDEX_NAME)
+      .namespace("posts")
+      .upsertRecords([
+        ...batch.map((post) => ({
+          ...post,
+        })),
+      ]);
   }
 
   const end = new Date();

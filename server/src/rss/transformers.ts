@@ -1,12 +1,12 @@
 import Parser from "rss-parser";
-import { RawNewsPost } from "./ingest";
+import { RawPost } from "./ingest";
 
 /**
  * A transformer takes a URL to an RSS feed (from a specifc source) and
- * converts it into an array of RawNewsPosts.
+ * converts it into an array of RawPosts.
  */
 
-export type TransformerType = (url: string) => Promise<RawNewsPost[]>;
+export type TransformerType = (url: string) => Promise<RawPost[]>;
 
 const NYTimesTransformer: TransformerType = async (url: string) => {
   const parser = new Parser({
@@ -19,7 +19,7 @@ const NYTimesTransformer: TransformerType = async (url: string) => {
   const items = [];
 
   for (const item of feed.items) {
-    const categories = item.categories.map((cat) => cat["_"]); // TODO: Use categories?
+    const categories = (item.categories ?? []).map((cat) => cat["_"]); // TODO: Use categories?
     const description =
       item.description || item["media:description"]
         ? (item.description ?? "") +
