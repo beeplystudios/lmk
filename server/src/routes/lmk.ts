@@ -33,23 +33,33 @@ export const lmkRouter = router({
       .select()
       .from(lmk)
       .where(eq(lmk.cliqueId, ctx.cliqueId))
-      .limit(5)
       .orderBy(desc(lmk.createdAt));
 
     const lmksWithQueryResults = await Promise.all(
       lmks.map(async (lmkItem) => {
         return {
           ...lmkItem,
-          answers: await pc
+          answer: await pc
             .index(INDEX_NAME)
             .namespace("posts")
             .searchRecords({
               query: {
                 inputs: { text: lmkItem.query },
-                topK: 3,
+                topK: 1,
               },
             })
-            .then((res) => res.result.hits.filter((hit) => hit._score > 0.3)),
+            .then((res) =>
+              z
+                .object({
+                  fields: z.object({
+                    title: z.string(),
+                    description: z.string(),
+                    source: z.string(),
+                  }),
+                })
+                .optional()
+                .parse(res.result.hits.filter((hit) => hit._score > 0.3).at(0))
+            ),
         };
       })
     );

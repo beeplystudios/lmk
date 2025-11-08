@@ -140,8 +140,8 @@ export default function AnimatedStickyHeader() {
             Your LMKs
           </Text>
           {lmkList.data
-            .map((lmk) => ({ ...lmk, answered: Math.random() > 0.5 }))
-            .sort((a, b) => (a.answered ? -1 : 1))
+            .map((lmk) => ({ ...lmk, answered: lmk.answer !== undefined }))
+            // .sort((a, b) => (a.answered ? -1 : 1))
             .map((lmk) => (
               <View
                 key={lmk.id}
@@ -168,36 +168,34 @@ export default function AnimatedStickyHeader() {
                     <Ionicons name="time" size={24} color="#fde68a" />
                   )}
                 </View>
-                {
+                {/* {
                   <Text className="text-white">
-                    {JSON.stringify(lmk.answers)}
+                    {JSON.stringify(lmk.answer, null, 2)}
                   </Text>
-                }
+                } */}
                 {lmk.answered && (
                   <View>
                     <Text className="text-stone-400 font-serif">
                       On January 1st, 2026:{" "}
                     </Text>
                     <View className="flex flex-row gap-4 my-4">
-                      <Image
+                      {/* <Image
                         source={{
                           uri: "https://www.aljazeera.com/wp-content/uploads/2025/11/ap_690ad7a2c7478-1762318242.jpg?resize=730%2C410&quality=80",
                           width: 100,
                           height: 50,
                         }}
                         className="flex-1 h-full object-cover rounded-md"
-                      />
+                      /> */}
                       <View className="flex-[2]">
                         <Text className="text-white text-lg font-medium font-serif">
-                          Zohran Mamdani has historic attendance at inauguration
-                          ceremony at City Hall
+                          {lmk.answer?.fields.title}
                         </Text>
                         <Text className="text-zinc-400">
-                          Lorem ipsum dolor sit amet consectetur, adipisicing
-                          elit. Maxime, veritatis!
+                          {lmk.answer?.fields.description}
                         </Text>
                         <Text className="text-stone-400 mt-2">
-                          From the New York Times
+                          From the {lmk.answer?.fields.source}
                         </Text>
                       </View>
                     </View>
