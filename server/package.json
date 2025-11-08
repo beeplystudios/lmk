@@ -27,6 +27,7 @@
     "drizzle-cuid2": "^2.1.0",
     "drizzle-orm": "^0.44.7",
     "hono": "^4.10.4",
+    "resend": "^6.4.2",
     "langchain": "^1.0.3",
     "rss-parser": "^3.13.0",
     "zod": "^4.1.12"
