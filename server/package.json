@@ -4,6 +4,17 @@
   "version": "0.1.0",
   "main": "src/index.ts",
   "scripts": {
-    "dev": "bun run --hot src/index.ts"
+    "dev": "bun run --hot src/index.ts",
+    "db:push": "drizzle-kit push"
+  },
+  "dependencies": {
+    "@neondatabase/serverless": "^1.0.2",
+    "dotenv": "^17.2.3",
+    "drizzle-orm": "^0.44.7",
+    "hono": "^4.10.4"
+  },
+  "devDependencies": {
+    "drizzle-kit": "^0.31.6",
+    "tsx": "^4.20.6"
   }
 }
