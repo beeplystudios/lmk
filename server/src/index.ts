@@ -1,6 +1,7 @@
 import { trpcServer } from "@hono/trpc-server";
 import { Hono } from "hono";
 import { auth } from "./auth";
+import "./pinecone";
 import { appRouter } from "./routes";
 
 const app = new Hono();
