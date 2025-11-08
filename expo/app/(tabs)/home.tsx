@@ -27,6 +27,7 @@ export default function HomeScreen() {
   const [lmk, setLmk] = useState("");
   const user = useSuspenseQuery(trpc.me.queryOptions());
   const create = useMutation(trpc.lmk.create.mutationOptions());
+  const lmkList = useSuspenseQuery(trpc.lmk.list.queryOptions({}));
 
   if (!user.data) return <Redirect href="/" />;
 
@@ -77,32 +78,25 @@ export default function HomeScreen() {
 
         <View className="pb-24 flex flex-col gap-4">
           <Text className="text-white font-medium font-serif text-xl -mb-2">
-            You might want to hear about...
+            Your LMKs
           </Text>
-          {headlines.map((headline) => (
+          {lmkList.data.map((lmk) => (
             <View
-              key={headline.id}
+              key={lmk.id}
               className="relative shadow-sm flex flex-row items-start p-4 gap-4 bg-zinc-800 rounded-2xl"
             >
-              <Image
-                source={{
-                  uri: headline.imgUrl,
-                  width: 50,
-                  height: 30,
-                }}
-                className="w-32 h-full object-cover rounded-xl"
-              />
-
               <View className="flex">
                 <Text className="text-white text-xl font-medium break-words">
-                  {headline.headline}
-                </Text>
-                <Text className="text-zinc-100 te">
-                  {headline.description.slice(0, 80)}...
+                  {lmk.query}
                 </Text>
               </View>
             </View>
           ))}
+          {lmkList.data.length === 0 && (
+            <Text className="text-zinc-400 italic">
+              You have no LMKs yet. Create one above!
+            </Text>
+          )}
         </View>
       </ScrollView>
     </SafeAreaView>
