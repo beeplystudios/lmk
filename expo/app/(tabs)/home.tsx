@@ -29,6 +29,7 @@ export default function AnimatedStickyHeader() {
   const [lmk, setLmk] = useState("");
   const user = useSuspenseQuery(trpc.me.queryOptions());
   const create = useMutation(trpc.lmk.create.mutationOptions());
+  const lmkList = useSuspenseQuery(trpc.lmk.list.queryOptions({}));
 
   useEffect(() => console.log(isSticky), [isSticky]);
 
@@ -118,30 +119,26 @@ export default function AnimatedStickyHeader() {
         </View>
 
         <View className="flex flex-col gap-4 pb-24">
-          {headlines.map((headline) => (
+          <Text className="text-white font-medium font-serif text-xl -mb-2">
+            Your LMKs
+          </Text>
+          {lmkList.data.map((lmk) => (
             <View
-              key={headline.id}
+              key={lmk.id}
               className="relative shadow-sm flex flex-row p-4 gap-4 bg-zinc-800 rounded-2xl my-2"
             >
-              <Image
-                source={{
-                  uri: headline.imgUrl,
-                  width: 50,
-                  height: 30,
-                }}
-                className="flex-[1] h-full object-cover rounded-xl"
-              />
-
               <View className="flex-[3]">
                 <Text className="text-white text-xl font-medium">
-                  {headline.headline}
-                </Text>
-                <Text className="text-zinc-100 te">
-                  {headline.description.slice(0, 80)}...
+                  {lmk.query}
                 </Text>
               </View>
             </View>
           ))}
+          {lmkList.data.length === 0 && (
+            <Text className="text-zinc-400 italic">
+              You have no LMKs yet. Create one above!
+            </Text>
+          )}
         </View>
 
         {/* <Animated.FlatList
