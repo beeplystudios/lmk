@@ -7,7 +7,7 @@ import {
   useSuspenseQuery,
 } from "@tanstack/react-query";
 import { Redirect } from "expo-router";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import {
   Animated,
   Image,
@@ -71,17 +71,14 @@ const CreateLmkForm: React.FC = () => {
 };
 
 export default function AnimatedStickyHeader() {
-  const [isSticky, setIsSticky] = useState(false);
-  const viewY = useRef(0);
   const scrollY = useRef(new Animated.Value(0)).current;
 
-  const [lmk, setLmk] = useState("");
   const user = useSuspenseQuery(trpc.me.queryOptions());
   const lmkList = useSuspenseQuery(trpc.lmk.list.queryOptions({}));
 
-  useEffect(() => console.log(isSticky), [isSticky]);
+  // useEffect(() => console.log(isSticky), [isSticky]);
 
-  const data = Array.from({ length: 30 }, (_, i) => `Item ${i + 1}`);
+  // const data = Array.from({ length: 30 }, (_, i) => `Item ${i + 1}`);
 
   // // Interpolate paddingTop: 0 → 16 when sticky
   // const paddingTop = scrollY.interpolate({
@@ -90,20 +87,20 @@ export default function AnimatedStickyHeader() {
   //   extrapolate: "clamp",
   // });
 
-  const translateY = scrollY.interpolate({
-    inputRange: [0, 1],
-    outputRange: ["0px", "64px"],
-    extrapolate: "clamp",
-  });
+  // const translateY = scrollY.interpolate({
+  //   inputRange: [0, 1],
+  //   outputRange: ["0px", "64px"],
+  //   extrapolate: "clamp",
+  // });
 
-  useEffect(() => {
-    console.log(scrollY);
-    scrollY.addListener((a) => {
-      console.log(a.value, translateY);
-    });
-  }, [scrollY]);
+  // useEffect(() => {
+  //   console.log(scrollY);
+  //   scrollY.addListener((a) => {
+  //     console.log(a.value, translateY);
+  //   });
+  // }, [scrollY]);
 
-  console.log(translateY);
+  // console.log(translateY);
 
   if (!user.data) return <Redirect href="/" />;
 
