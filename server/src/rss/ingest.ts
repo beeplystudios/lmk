@@ -38,5 +38,5 @@ export interface IngestibleNewsPost {
    * more contextual information not necessarily described in the
    * title/description.
    */
-  facts: string[];
+  betterHeadline: string;
 }
