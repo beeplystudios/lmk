@@ -2,6 +2,7 @@
   "expo": {
     "name": "lmk",
     "slug": "lmk",
+    "owner": "beeply-studios",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -12,6 +13,8 @@
       "supportsTablet": true
     },
     "android": {
+      "package": "lmk.beeplystudios.com",
+      "version": "0.0.1",
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
@@ -19,7 +22,8 @@
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "googleServicesFile": "./google-services.json"
     },
     "web": {
       "output": "static",
@@ -38,11 +42,18 @@
             "backgroundColor": "#000000"
           }
         }
-      ]
+      ],
+      "expo-notifications"
     ],
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "97090878-a4a3-4ce6-87fc-6cf1b820ee62"
+      }
     }
   }
 }
