@@ -4,7 +4,7 @@ import { publicProcedure, router } from "../trpc";
 
 export const appRouter = router({
   me: publicProcedure.use(extractAuth).query(({ ctx }) => {
-    return ctx.user;
+    return ctx.user ?? null;
   }),
 
   greet: publicProcedure
