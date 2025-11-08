@@ -60,7 +60,7 @@ export default function AnimatedStickyHeader() {
   if (!user.data) return <Redirect href="/" />;
 
   return (
-    <View className="p-4">
+    <View className="p-4 min-h-screen" style={{ backgroundColor: "#18181b" }}>
       <Animated.ScrollView
         stickyHeaderIndices={[1]}
         onScroll={Animated.event(
