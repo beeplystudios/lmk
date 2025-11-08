@@ -17,7 +17,7 @@ export const auth = betterAuth({
   baseURL: EXPO_PUBLIC_API_URL,
   secret: BETTER_AUTH_SECRET,
   plugins: [expo()],
-  trustedOrigins: ["lmk://", "lmk://*"],
+  trustedOrigins: ["lmk://", "lmk://*", "exp://"],
   database: drizzleAdapter(db, { provider: "pg" }),
   socialProviders: {
     google: {

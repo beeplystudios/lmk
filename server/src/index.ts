@@ -7,12 +7,16 @@ import { appRouter } from "./routes";
 const app = new Hono();
 
 app.get("/", (c) => c.text("Hono!"));
-app.use(
-  "/api/trpc/*",
+app.use("/api/trpc/*", (context, next) =>
   trpcServer({
     endpoint: "/api/trpc",
     router: appRouter,
-  })
+    createContext: () => {
+      return {
+        honoCtx: context,
+      };
+    },
+  })(context, next)
 );
 
 app.on(["POST", "GET"], "/api/auth/*", (c) => {
