@@ -1,0 +1,9 @@
+{
+  "name": "@lmk/server",
+  "private": true,
+  "version": "0.1.0",
+  "main": "src/index.ts",
+  "scripts": {
+    "dev": "bun run --hot src/index.ts"
+  }
+}
