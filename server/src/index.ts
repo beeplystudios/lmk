@@ -1,6 +1,7 @@
 import { trpcServer } from "@hono/trpc-server";
 import { Hono } from "hono";
 import { auth } from "./auth";
+import { db } from "./db";
 import "./pinecone";
 import { appRouter } from "./routes";
 
@@ -14,6 +15,7 @@ app.use("/api/trpc/*", (context, next) =>
     createContext: () => {
       return {
         honoCtx: context,
+        db,
       };
     },
   })(context, next)

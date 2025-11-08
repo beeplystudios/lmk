@@ -17,7 +17,9 @@ export const post = pgTable("post", {
 export const lmk = pgTable("lmk", {
   id: cuid2("id").defaultRandom().primaryKey(),
   query: varchar("query", { length: 250 }).notNull(),
-  userId: varchar("user_id", { length: 255 }).notNull(),
+  cliqueId: varchar("clique_id")
+    .notNull()
+    .references(() => clique.id, { onDelete: "cascade" }),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
@@ -29,6 +31,7 @@ export const clique = pgTable("clique", {
 
 export const cliqueRelations = relations(clique, ({ many }) => ({
   members: many(cliqueUser),
+  lmks: many(lmk),
 }));
 
 export const usersRelations = relations(user, ({ many }) => ({
