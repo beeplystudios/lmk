@@ -1,4 +1,4 @@
-export interface NewsPost {
+export interface RawNewsPost {
   title: string;
   /** Where the post came from. e.g. "NYTimes", "Reuters", "Associated Press" */
   source: string;
