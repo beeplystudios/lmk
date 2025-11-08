@@ -1,8 +1,8 @@
 import { Stack } from "expo-router";
 
 import "@/global.css";
-import { queryClient } from "@/lib/trpc";
-import { QueryClientProvider } from "@tanstack/react-query";
+import { queryClient, trpc } from "@/lib/trpc";
+import { QueryClientProvider, useMutation } from "@tanstack/react-query";
 import Constants from "expo-constants";
 import * as Device from "expo-device";
 import * as Notifications from "expo-notifications";
@@ -109,12 +109,15 @@ export default function RootLayout() {
   const [notification, setNotification] = useState<
     Notifications.Notification | undefined
   >(undefined);
+  const saveToken = useMutation(trpc.expoPushToken.mutationOptions());
 
   useEffect(() => {
     registerForPushNotificationsAsync()
       .then((token) => {
         setExpoPushToken(token);
-        // send the token to the server
+        // send the token to the server !!!
+        // probably never actually nonexistent when non-erroring but whatevs
+        if (token) saveToken.mutate({ token });
       })
       .catch((error: any) => setExpoPushToken(`${error}`));
 
