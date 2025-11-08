@@ -2,6 +2,10 @@
 // ---(cleanup + object mixing)-> RawNewsPost
 // ---(LLM + object mixing)--> IngestibleNewsPost --> Pinecone!
 
+import { Index } from "@pinecone-database/pinecone";
+import { db } from "../db";
+import { FeedWithTransformer } from "./feeds";
+
 /**
  * A news post directly extracted from an RSS feed.
  */
@@ -38,5 +42,25 @@ export interface IngestibleNewsPost {
    * more contextual information not necessarily described in the
    * title/description.
    */
-  facts: string[];
+  betterHeadline: string;
 }
+
+export interface IngestCtx {
+  index: Index;
+  namespace: string;
+}
+
+export const ingestTransformer = async (feed: FeedWithTransformer) => {
+  const start = new Date();
+
+  console.log(`ingest: starting ingestion! start=${start.toISOString()}`);
+
+  await db.transaction(async (tx) => {
+    const results = await feed.transformer(feed.url);
+    console.log(results);
+  });
+
+  const end = new Date();
+  console.log(`ingest: finished ingestion! end=${end.toISOString()}`);
+  console.log(`ingest: duration=${end.getTime() - start.getTime()}ms`);
+};
