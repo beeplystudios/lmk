@@ -2,7 +2,7 @@
 // ---(cleanup + object mixing)-> RawNewsPost
 // ---(LLM + object mixing)--> IngestibleNewsPost --> Pinecone!
 
-import { Index } from "@pinecone-database/pinecone";
+import chalk from "chalk";
 import { eq } from "drizzle-orm";
 import { db } from "../db";
 import { post } from "../db/schema";
@@ -51,27 +51,31 @@ export interface IngestiblePost {
 }
 
 export interface IngestCtx {
-  index: Index;
-  namespace: string;
+  reportNewPost: (post: IngestiblePost) => Promise<void>;
 }
 
-export const ingestTransformer = async (feed: FeedWithTransformer) => {
+export const ingestTransformer = async (
+  ctx: IngestCtx,
+  feed: FeedWithTransformer
+) => {
   const start = new Date();
 
-  console.log(`ingest: starting ingestion! start=${start.toISOString()}`);
+  console.log(
+    chalk.blue(`ingest: starting ingestion! start=${start.toISOString()}`)
+  );
 
   const results = await feed.transformer(feed.url);
 
   const BATCH_SIZE = 50;
-  const batches: IngestiblePost[][] = [];
+  const batches: { post: IngestiblePost; isNew: boolean }[][] = [];
 
-  const insertBatched = (upsertedPost: IngestiblePost) => {
+  const insertBatched = (upsertedPost: IngestiblePost, isNew: boolean) => {
     if (
       batches.length === 0 ||
       batches[batches.length - 1].length >= BATCH_SIZE
     )
       batches.push([]);
-    batches[batches.length - 1].push(upsertedPost);
+    batches[batches.length - 1].push({ post: upsertedPost, isNew });
   };
 
   for (const rawPost of results) {
@@ -83,25 +87,33 @@ export const ingestTransformer = async (feed: FeedWithTransformer) => {
       .then((res) => res[0]);
 
     if (newPost) {
-      console.log("ingest: skipping existing post", rawPost.title);
+      console.log(chalk.dim("ingest: skipping existing post", rawPost.title));
 
-      insertBatched({
-        _id: newPost.id,
-        embed: newPost.betterHeadline,
-        description: newPost.description,
-        title: newPost.title,
-        source: newPost.source,
-      });
+      insertBatched(
+        {
+          _id: newPost.id,
+          embed: newPost.betterHeadline,
+          description: newPost.description,
+          title: newPost.title,
+          source: newPost.source,
+        },
+        false
+      );
 
       continue;
     }
 
     const ingestStart = Date.now();
-    console.log("ingest: processing post", rawPost.title);
-    const betterPost = await expandRawNewsPost(rawPost);
-    console.log("ingest: --> better headline:", betterPost.headline);
 
-    // Upsert into posts
+    console.log(
+      chalk.dim(`ingest: creating better headline for '${rawPost.title}'`)
+    );
+    const betterPost = await expandRawNewsPost(rawPost);
+    console.log(
+      chalk.dim(`ingest: --> better headline: ${betterPost.headline}`)
+    );
+
+    // Insert into the main database
     const existing = await db
       .insert(post)
       .values({
@@ -126,30 +138,55 @@ export const ingestTransformer = async (feed: FeedWithTransformer) => {
     } satisfies IngestiblePost;
 
     console.log(
-      "ingest: processed post",
-      rawPost.title,
-      "in",
-      `${Date.now() - ingestStart}ms`
+      chalk.green(
+        "ingest: --> processed post",
+        rawPost.title,
+        "in",
+        `${Date.now() - ingestStart}ms`
+      )
     );
 
-    insertBatched(upsertedPost);
+    insertBatched(upsertedPost, true);
   }
 
-  console.log(`ingest: created ${batches.length} batches for Pinecone`);
+  console.log(
+    chalk.green(
+      `ingest: !!! done inserting into main database! created ${batches.length} batches for Pinecone...`
+    )
+  );
 
   for (const [i, batch] of batches.entries()) {
-    console.log(`ingest: upserting batch ${i + 1}/${batches.length}...`);
+    console.log(
+      chalk.green(`ingest: --> upserting batch ${i + 1}/${batches.length}...`)
+    );
     await pc
       .index(INDEX_NAME)
       .namespace("posts")
       .upsertRecords([
-        ...batch.map((post) => ({
-          ...post,
+        ...batch.map((record) => ({
+          ...record.post,
         })),
       ]);
   }
 
   const end = new Date();
-  console.log(`ingest: finished ingestion! end=${end.toISOString()}`);
-  console.log(`ingest: duration=${end.getTime() - start.getTime()}ms`);
+
+  const createdRecords = batches.reduce((acc, batch) => acc + batch.length, 0);
+  const totalRecords = db.$count(post);
+
+  console.log(
+    chalk.blue(
+      `ingest: !!! finished ingestion for '${
+        feed.slug
+      }'! end=${end.toISOString()}`
+    )
+  );
+  console.log(
+    chalk.dim(`ingest: --> duration=${end.getTime() - start.getTime()}ms`)
+  );
+  console.log(
+    chalk.dim(
+      `ingest: --> created records=${createdRecords} total records=${await totalRecords}`
+    )
+  );
 };
