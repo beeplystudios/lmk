@@ -11,8 +11,8 @@ export default function HomeScreen() {
   );
 
   return (
-    <SafeAreaView>
-      <Text>{data}</Text>
+    <SafeAreaView className="text-white">
+      <Text className="text-white">{data}</Text>
     </SafeAreaView>
   );
 }
