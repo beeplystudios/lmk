@@ -1,7 +1,8 @@
 {
   "compilerOptions": {
     "esModuleInterop": true,
-    "module": "preserve",
+    "module": "esnext",
+    "target": "esnext",
     "moduleResolution": "bundler",
     "jsx": "react-native",
     "lib": [
