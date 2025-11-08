@@ -22,6 +22,15 @@ export default function TabLayout() {
           ),
         })}
       </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="explore">
+        <Label>Explore</Label>
+        {Platform.select({
+          ios: <Icon sf="magnifyingglass" />,
+          android: (
+            <Icon src={<VectorIcon family={MaterialIcons} name="search" />} />
+          ),
+        })}
+      </NativeTabs.Trigger>
     </NativeTabs>
   );
 }
