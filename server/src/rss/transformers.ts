@@ -16,146 +16,154 @@ const NYTimesTransformer: TransformerType = async (url: string) => {
   });
   const feed = await parser.parseURL(url);
 
-  return feed.items.map((item) => {
+  const items = [];
+
+  for (const item of feed.items) {
     const categories = item.categories.map((cat) => cat["_"]); // TODO: Use categories?
     const description =
       item.description || item["media:description"]
-        ? (item.description ?? "") + (item["media:description"] ?? "")
+        ? (item.description ?? "") +
+          "\nImage shows: " +
+          (item["media:description"] ?? "")
         : null;
     const image = item["media:content"] ? item["media:content"].$.url : null;
 
-    return {
-      source: "NYTimes",
+    if (!item.title) continue;
+    if (!item.link) continue;
 
-      title: item.title ?? "Untitled",
-      link: item.link ?? null,
+    items.push({
+      source: "NYTimes",
+      title: item.title,
+      link: item.link,
       description,
       image,
-    };
-  });
+    });
+  }
+
+  return items;
 };
 
-const CNBCTransformer: TransformerType = async (url: string) => {
-  const parser = new Parser();
-  const feed = await parser.parseURL(url);
+// const CNBCTransformer: TransformerType = async (url: string) => {
+//   const parser = new Parser();
+//   const feed = await parser.parseURL(url);
 
-  return feed.items.map((item) => {
-    return {
-      source: "CNBC",
+//   return feed.items.map((item) => {
+//     return {
+//       source: "CNBC",
 
-      title: item.title ?? "Untitled",
-      link: item.link ?? null,
-      description: item.content ?? null,
-      image: null,
-    };
-  });
-};
+//       title: item.title ?? "Untitled",
+//       link: item.link ?? null,
+//       description: item.content ?? null,
+//       image: null,
+//     };
+//   });
+// };
 
-const GuardianTransformer: TransformerType = async (url: string) => {
-  const parser = new Parser({
-    customFields: {
-      item: ["media:content"],
-    },
-  });
-  const feed = await parser.parseURL(url);
+// const GuardianTransformer: TransformerType = async (url: string) => {
+//   const parser = new Parser({
+//     customFields: {
+//       item: ["media:content"],
+//     },
+//   });
+//   const feed = await parser.parseURL(url);
 
-  return feed.items.map((item) => {
-    const categories = item.categories.map((cat) => cat["_"]); // TODO: Use categories?
-    const image = item["media:content"] ? item["media:content"].$.url : null;
+//   return feed.items.map((item) => {
+//     const categories = item.categories.map((cat) => cat["_"]); // TODO: Use categories?
+//     const image = item["media:content"] ? item["media:content"].$.url : null;
 
-    return {
-      source: "The Guardian",
+//     return {
+//       source: "The Guardian",
 
-      title: item.title ?? "Untitled",
-      link: item.link ?? null,
-      description: item.contentSnippet ?? null, // Normal `content` includes HTML
-      image,
-    };
-  });
-};
+//       title: item.title ?? "Untitled",
+//       link: item.link ?? null,
+//       description: item.contentSnippet ?? null, // Normal `content` includes HTML
+//       image,
+//     };
+//   });
+// };
 
-const BBCTransformer: TransformerType = async (url: string) => {
-  const parser = new Parser({
-    customFields: {
-      item: ["media:thumbnail"],
-    },
-  });
-  const feed = await parser.parseURL(url);
+// const BBCTransformer: TransformerType = async (url: string) => {
+//   const parser = new Parser({
+//     customFields: {
+//       item: ["media:thumbnail"],
+//     },
+//   });
+//   const feed = await parser.parseURL(url);
 
-  return feed.items.map((item) => {
-    const image = item["media:thumbnail"]
-      ? item["media:thumbnail"].$.url
-      : null;
+//   return feed.items.map((item) => {
+//     const image = item["media:thumbnail"]
+//       ? item["media:thumbnail"].$.url
+//       : null;
 
-    return {
-      source: "BBC",
+//     return {
+//       source: "BBC",
 
-      title: item.title ?? "Untitled",
-      link: item.link ?? null,
-      description: item.content ?? null,
-      image,
-    };
-  });
-};
+//       title: item.title ?? "Untitled",
+//       link: item.link ?? null,
+//       description: item.content ?? null,
+//       image,
+//     };
+//   });
+// };
 
-const NPRTransformer: TransformerType = async (url: string) => {
-  const parser = new Parser();
-  const feed = await parser.parseURL(url);
+// const NPRTransformer: TransformerType = async (url: string) => {
+//   const parser = new Parser();
+//   const feed = await parser.parseURL(url);
 
-  return feed.items.map((item) => {
-    return {
-      source: "NPR",
+//   return feed.items.map((item) => {
+//     return {
+//       source: "NPR",
 
-      title: item.title ?? "Untitled",
-      link: item.link ?? null,
-      description: item.content ?? null,
-      image: null,
-    };
-  });
-};
+//       title: item.title ?? "Untitled",
+//       link: item.link ?? null,
+//       description: item.content ?? null,
+//       image: null,
+//     };
+//   });
+// };
 
-const WiredTransformer: TransformerType = async (url: string) => {
-  const parser = new Parser({
-    customFields: {
-      item: ["media:thumbnail"],
-    },
-  });
-  const feed = await parser.parseURL(url);
+// const WiredTransformer: TransformerType = async (url: string) => {
+//   const parser = new Parser({
+//     customFields: {
+//       item: ["media:thumbnail"],
+//     },
+//   });
+//   const feed = await parser.parseURL(url);
 
-  return feed.items.map((item) => {
-    const image = item["media:thumbnail"]
-      ? item["media:thumbnail"].$.url
-      : null;
-    return {
-      source: "Wired",
+//   return feed.items.map((item) => {
+//     const image = item["media:thumbnail"]
+//       ? item["media:thumbnail"].$.url
+//       : null;
+//     return {
+//       source: "Wired",
 
-      title: item.title ?? "Untitled",
-      link: item.link ?? null,
-      description: item.content ?? null,
-      image,
-    };
-  });
-};
+//       title: item.title ?? "Untitled",
+//       link: item.link ?? null,
+//       description: item.content ?? null,
+//       image,
+//     };
+//   });
+// };
 
-const VergeTransformer: TransformerType = async (url: string) => {
-  const parser = new Parser({
-    customFields: {
-      item: ["summary"],
-    },
-  });
-  const feed = await parser.parseURL(url);
+// const VergeTransformer: TransformerType = async (url: string) => {
+//   const parser = new Parser({
+//     customFields: {
+//       item: ["summary"],
+//     },
+//   });
+//   const feed = await parser.parseURL(url);
 
-  return feed.items.map((item) => {
-    return {
-      source: "The Verge",
+//   return feed.items.map((item) => {
+//     return {
+//       source: "The Verge",
 
-      title: item.title ?? "Untitled",
-      link: item.link ?? null,
-      description: item.summary ?? null, // TODO: Handle special chars: —&#160;asking the same question. And I’m afraid I’m going to keep being here, week in, week out, until I have a T1 Phone in [&#8230;]"
-      image: null,
-    };
-  });
-};
+//       title: item.title ?? "Untitled",
+//       link: item.link ?? null,
+//       description: item.summary ?? null, // TODO: Handle special chars: —&#160;asking the same question. And I’m afraid I’m going to keep being here, week in, week out, until I have a T1 Phone in [&#8230;]"
+//       image: null,
+//     };
+//   });
+// };
 
 // const HackerNewsTransformer: TransformerType = async (url: string) => {
 //   const parser = new Parser();
@@ -175,11 +183,11 @@ const VergeTransformer: TransformerType = async (url: string) => {
 
 export const Transformers = {
   NYTimes: NYTimesTransformer,
-  CNBC: CNBCTransformer,
-  Guardian: GuardianTransformer,
-  BBC: BBCTransformer,
-  NPR: NPRTransformer,
-  Wired: WiredTransformer,
-  Verge: VergeTransformer,
+  // CNBC: CNBCTransformer,
+  // Guardian: GuardianTransformer,
+  // BBC: BBCTransformer,
+  // NPR: NPRTransformer,
+  // Wired: WiredTransformer,
+  // Verge: VergeTransformer,
   //   HackerNews: HackerNewsTransformer,
 } as const;

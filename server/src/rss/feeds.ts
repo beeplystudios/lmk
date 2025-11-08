@@ -20,25 +20,54 @@ export const FEEDS: FeedWithTransformer[] = [
     url: "https://rss.nytimes.com/services/xml/rss/nyt/World.xml",
     transformer: Transformers.NYTimes,
   },
-  /* New York Times */
-  // [
-  //   "https://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml",
-  //   Transformers.NYTimes,
-  // ],
-  // [
-  //   "https://rss.nytimes.com/services/xml/rss/nyt/World.xml",
-  //   Transformers.NYTimes,
-  // ],
-  // ["https://rss.nytimes.com/services/xml/rss/nyt/US.xml", Transformers.NYTimes],
-  // [
-  //   "https://rss.nytimes.com/services/xml/rss/nyt/Politics.xml",
-  //   Transformers.NYTimes,
-  // ],
-  // [
-  //   "https://rss.nytimes.com/services/xml/rss/nyt/Upshot.xml",
-  //   Transformers.NYTimes,
-  // ],
-  // /* Other News Outlets */
+  {
+    slug: "nytimes-us",
+    name: "NYTimes - U.S.",
+    url: "https://rss.nytimes.com/services/xml/rss/nyt/US.xml",
+    transformer: Transformers.NYTimes,
+  },
+  {
+    slug: "nytimes-politics",
+    name: "NYTimes - Politics",
+    url: "https://rss.nytimes.com/services/xml/rss/nyt/Politics.xml",
+    transformer: Transformers.NYTimes,
+  },
+  {
+    slug: "nytimes-business",
+    name: "NYTimes - Business",
+    url: "https://rss.nytimes.com/services/xml/rss/nyt/Business.xml",
+    transformer: Transformers.NYTimes,
+  },
+  {
+    slug: "nytimes-technology",
+    name: "NYTimes - Technology",
+    url: "https://rss.nytimes.com/services/xml/rss/nyt/Technology.xml",
+    transformer: Transformers.NYTimes,
+  },
+  {
+    slug: "nytimes-science",
+    name: "NYTimes - Science",
+    url: "https://rss.nytimes.com/services/xml/rss/nyt/Science.xml",
+    transformer: Transformers.NYTimes,
+  },
+  {
+    slug: "nytimes-health",
+    name: "NYTimes - Health",
+    url: "https://rss.nytimes.com/services/xml/rss/nyt/Health.xml",
+    transformer: Transformers.NYTimes,
+  },
+  {
+    slug: "nytimes-arts",
+    name: "NYTimes - Arts",
+    url: "https://rss.nytimes.com/services/xml/rss/nyt/Arts.xml",
+    transformer: Transformers.NYTimes,
+  },
+  {
+    slug: "nytimes-upshot",
+    name: "NYTimes - Upshot",
+    url: "https://rss.nytimes.com/services/xml/rss/nyt/Upshot.xml",
+    transformer: Transformers.NYTimes,
+  },
   // ["https://www.cnbc.com/id/100003114/device/rss/rss.html", Transformers.CNBC],
   // ["https://www.theguardian.com/commentisfree/rss", Transformers.Guardian],
   // ["https://feeds.bbci.co.uk/news/world/rss.xml", Transformers.BBC],
