@@ -356,10 +356,10 @@ const sendEmail = async (target: string, email: EmailData) => {
   console.log({ data });
 };
 
-const emailData = MatchEmail(
-  "New AI Happens",
-  "New AI model released",
-  "https://example.com/ai-model",
-  "TechCrunch"
-);
-sendEmail("aramie.ewen@gmail.com", emailData);
+// const emailData = MatchEmail(
+//   "New AI Happens",
+//   "New AI model released",
+//   "https://example.com/ai-model",
+//   "TechCrunch"
+// );
+// sendEmail("aramie.ewen@gmail.com", emailData);
