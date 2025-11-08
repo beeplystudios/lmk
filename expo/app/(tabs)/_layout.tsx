@@ -12,7 +12,7 @@ import { Platform } from "react-native";
 
 export default function TabLayout() {
   return (
-    <NativeTabs>
+    <NativeTabs backgroundColor="#27272a">
       <NativeTabs.Trigger name="home">
         <Label>Home</Label>
         {Platform.select({
