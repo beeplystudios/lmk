@@ -32,9 +32,9 @@ export default function HomeScreen() {
 
   return (
     <SafeAreaView className="text-white p-4">
-      <ScrollView>
+      <ScrollView stickyHeaderIndices={[1]}>
         <View className="flex items-center justify-between gap-4 flex-row">
-          <Text className="text-white text-2xl font-medium font-serif">
+          <Text className="text-stone-400 text-2xl font-medium font-serif">
             Good morning, {user.data?.name.split(" ")[0]}
           </Text>
 
@@ -48,8 +48,8 @@ export default function HomeScreen() {
         </View>
 
         <View className="my-16">
-          <Text className="text-cyan-300 text-center mb-2 text-6xl font-semibold font-serif">
-            LMK!
+          <Text className="text-stone-50 mb-2 text-4xl font-semibold font-serif">
+            LetMeKnow!
           </Text>
           <View className="flex flex-row mt-4">
             <TextInput className="h-16 pl-48 pr-12 text-lg grow text-zinc-200 bg-zinc-800 rounded-l-full border-[0.0125rem] border-zinc-300/70 shadow-xs" />
@@ -64,23 +64,32 @@ export default function HomeScreen() {
           </View>
         </View>
 
-        <View className="pb-24 flex flex-col gap-8">
+        <View className="pb-24 flex flex-col gap-4">
+          <Text className="text-white font-medium font-serif text-xl -mb-2">
+            You might want to hear about...
+          </Text>
           {headlines.map((headline) => (
-            <View key={headline.id}>
+            <View
+              key={headline.id}
+              className="relative shadow-sm flex flex-row items-start p-4 gap-4 bg-zinc-800 rounded-2xl"
+            >
               <Image
                 source={{
                   uri: headline.imgUrl,
-                  width: 400,
-                  height: 200,
+                  width: 50,
+                  height: 30,
                 }}
-                className="w-full object-cover rounded-xl"
+                className="w-32 h-full object-cover rounded-xl"
               />
-              <Text className="text-white text-xl font-medium mt-4">
-                {headline.headline}
-              </Text>
-              <Text className="text-zinc-300 te">
-                {headline.description.slice(0, 80)}...
-              </Text>
+
+              <View className="flex">
+                <Text className="text-white text-xl font-medium break-words">
+                  {headline.headline}
+                </Text>
+                <Text className="text-zinc-100 te">
+                  {headline.description.slice(0, 80)}...
+                </Text>
+              </View>
             </View>
           ))}
         </View>
