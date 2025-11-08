@@ -1,6 +1,7 @@
 import { appRouter } from "@/routes";
 import { trpcServer } from "@hono/trpc-server";
 import { Hono } from "hono";
+import { auth } from "./auth";
 
 const app = new Hono();
 
@@ -12,6 +13,10 @@ app.use(
     router: appRouter,
   })
 );
+
+app.on(["POST", "GET"], "/api/auth/*", (c) => {
+  return auth.handler(c.req.raw);
+});
 
 const server = Bun.serve({
   fetch: app.fetch,
