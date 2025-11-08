@@ -2,7 +2,7 @@ import { trpc } from "@/lib/trpc";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
 import { Redirect } from "expo-router";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import {
   Animated,
   Image,
@@ -22,40 +22,14 @@ const headlines = new Array(10).fill(0).map((_, idx) => ({
 }));
 
 export default function AnimatedStickyHeader() {
-  const [isSticky, setIsSticky] = useState(false);
-  const viewY = useRef(0);
-  const scrollY = useRef(new Animated.Value(0)).current;
-
   const [lmk, setLmk] = useState("");
   const user = useSuspenseQuery(trpc.me.queryOptions());
-  const create = useMutation(trpc.lmk.create.mutationOptions());
   const lmkList = useSuspenseQuery(trpc.lmk.list.queryOptions({}));
-
-  useEffect(() => console.log(isSticky), [isSticky]);
-
-  const data = Array.from({ length: 30 }, (_, i) => `Item ${i + 1}`);
-
-  // // Interpolate paddingTop: 0 → 16 when sticky
-  // const paddingTop = scrollY.interpolate({
-  //   inputRange: [0, 1], // 1px scroll triggers full padding
-  //   outputRange: [0, 64],
-  //   extrapolate: "clamp",
-  // });
-
-  const translateY = scrollY.interpolate({
-    inputRange: [0, 1],
-    outputRange: ["0px", "64px"],
-    extrapolate: "clamp",
-  });
-
-  useEffect(() => {
-    console.log(scrollY);
-    scrollY.addListener((a) => {
-      console.log(a.value, translateY);
-    });
-  }, [scrollY]);
-
-  console.log(translateY);
+  const create = useMutation(
+    trpc.lmk.create.mutationOptions({
+      onSettled: () => lmkList.refetch(),
+    })
+  );
 
   if (!user.data) return <Redirect href="/" />;
 
@@ -63,10 +37,7 @@ export default function AnimatedStickyHeader() {
     <View className="p-4">
       <Animated.ScrollView
         stickyHeaderIndices={[1]}
-        onScroll={Animated.event(
-          [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-          { useNativeDriver: true } // must be false for layout props
-        )}
+        showsVerticalScrollIndicator={false}
       >
         <View>
           <View className="flex items-center justify-between gap-4 flex-row pt-24">
@@ -90,9 +61,6 @@ export default function AnimatedStickyHeader() {
         <View className="pt-12">
           <View
             // style={{ paddingTop: 64 }}
-            onLayout={(e) => {
-              viewY.current = e.nativeEvent.layout.y;
-            }}
             className="flex flex-row pb-8"
           >
             <TextInput
@@ -106,9 +74,9 @@ export default function AnimatedStickyHeader() {
               className="h-24 bg-[#CEF5E3] border-[0.0125rem] w-max min-w-24 px-2 border-full flex items-center justify-center rounded-r-full active:scale-95"
               onPress={() => {
                 console.log(lmk);
-                // create.mutate({ query: lmk });
+                create.mutate({ query: lmk });
                 // console.log(lmk);
-                // setLmk("");
+                setLmk("");
               }}
             >
               <Text className="font-medium">
@@ -118,133 +86,78 @@ export default function AnimatedStickyHeader() {
           </View>
         </View>
 
-        <View className="flex flex-col gap-4 pb-24">
+        <View className="flex flex-col gap-4 pb-32">
           <Text className="text-white font-medium font-serif text-xl -mb-2">
             Your LMKs
           </Text>
-          {lmkList.data.map((lmk) => (
-            <View
-              key={lmk.id}
-              className="relative shadow-sm flex flex-row p-4 gap-4 bg-zinc-800 rounded-2xl my-2"
-            >
-              <View className="flex-[3]">
-                <Text className="text-white text-xl font-medium">
-                  {lmk.query}
-                </Text>
+          {lmkList.data
+            .map((lmk) => ({ ...lmk, answered: Math.random() > 0.5 }))
+            .sort((a, b) => (a.answered ? -1 : 1))
+            .map((lmk) => (
+              <View
+                key={lmk.id}
+                className="relative shadow-sm flex flex-col p-4 gap-4 bg-zinc-800 rounded-2xl my-2"
+              >
+                <View className="flex-[3] flex flex-row items-center justify-between gap-1">
+                  <View>
+                    <Text className="font-serif text-stone-400">
+                      {lmk.answered
+                        ? "You asked us to you let you know when..."
+                        : "Let me know when..."}
+                    </Text>
+                    <Text className="text-white text-xl font-medium">
+                      {lmk.query}
+                    </Text>
+                  </View>
+                  {lmk.answered ? (
+                    <Ionicons
+                      name="checkmark-circle"
+                      size={24}
+                      color="#86efac"
+                    />
+                  ) : (
+                    <Ionicons name="time" size={24} color="#fde68a" />
+                  )}
+                </View>
+                {lmk.answered && (
+                  <View>
+                    <Text className="text-stone-400 font-serif">
+                      On January 1st, 2026:{" "}
+                    </Text>
+                    <View className="flex flex-row gap-4 my-4">
+                      <Image
+                        source={{
+                          uri: "https://www.aljazeera.com/wp-content/uploads/2025/11/ap_690ad7a2c7478-1762318242.jpg?resize=730%2C410&quality=80",
+                          width: 100,
+                          height: 50,
+                        }}
+                        className="flex-1 h-full object-cover rounded-md"
+                      />
+                      <View className="flex-[2]">
+                        <Text className="text-white text-lg font-medium font-serif">
+                          Zohran Mamdani has historic attendance at inauguration
+                          ceremony at City Hall
+                        </Text>
+                        <Text className="text-zinc-400">
+                          Lorem ipsum dolor sit amet consectetur, adipisicing
+                          elit. Maxime, veritatis!
+                        </Text>
+                        <Text className="text-stone-400 mt-2">
+                          From the New York Times
+                        </Text>
+                      </View>
+                    </View>
+                  </View>
+                )}
               </View>
-            </View>
-          ))}
+            ))}
           {lmkList.data.length === 0 && (
             <Text className="text-zinc-400 italic">
               You have no LMKs yet. Create one above!
             </Text>
           )}
         </View>
-
-        {/* <Animated.FlatList
-          data={headlines}
-          keyExtractor={(item) => item.id}
-          renderItem={({ item: headline }) => (
-
-          )}
-          ListHeaderComponent={renderHeader}
-          // stickyHeaderIndices={[1]}
-
-          // scrollEventThrottle={16}
-        /> */}
       </Animated.ScrollView>
     </View>
   );
 }
-
-//   const user = useSuspenseQuery(trpc.me.queryOptions());
-
-//   const signOut = useMutation(signOutOptions);
-
-//   if (!user.data) return <Redirect href="/" />;
-
-//   return (
-//     <View className="text-white p-4">
-//       <ScrollView
-//         stickyHeaderIndices={[2]}
-//         // style={{ paddingTop: 32 }}
-//         showsVerticalScrollIndicator={false}
-//       >
-// <View className="flex items-center justify-between gap-4 flex-row mt-16">
-//   <Text className="text-stone-400 text-2xl font-medium font-serif">
-//     Good morning, {user.data?.name.split(" ")[0]}
-//   </Text>
-
-//   <Image
-//     source={{
-//       uri: user.data.image!,
-//     }}
-//     className="size-12 rounded-full"
-//   />
-//   {/* <Button title="Logout" onPress={() => signOut.mutate()} /> */}
-// </View>
-
-// <Text className="text-stone-50 mb-2 text-4xl font-semibold font-serif mt-8">
-//   LetMeKnow!
-// </Text>
-//         {/* <BlurView
-//           className="my-8"
-//           intensity={100}
-//           tint="systemMaterialDark"
-//         ></BlurView> */}
-
-//         <BlurView
-//           intensity={120}
-//           tint="dark"
-//           className="absolute top-0 left-0 right-0 h-16 z-10 justify-center items-center"
-//         >
-//           {/* <Text className="text-white font-semibold text-lg">
-//             I stick to the top 🔥
-//           </Text> */}
-//           <View className="flex flex-row mb-8 pt-8">
-//             <TextInput
-//               placeholder="Let me know when..."
-//               className="h-24 shadow-sm px-8 text-lg grow text-zinc-200 bg-zinc-800 rounded-l-full border-[0.0125rem] border-zinc-300/70 shadow-xs placeholder:text-zinc-300"
-//             />
-
-//             <Pressable className="h-24 bg-[#CEF5E3] border-[0.0125rem] w-max min-w-24 px-2 border-full flex items-center justify-center rounded-r-full">
-//               <Text className="font-medium">
-//                 <Ionicons name="add-circle" size={24} />
-//               </Text>
-//             </Pressable>
-//           </View>
-//         </BlurView>
-
-//         <View className="pb-24 flex flex-col gap-4">
-//           <Text className="text-white font-medium font-serif text-xl -mb-2">
-//             You might want to hear about...
-//           </Text>
-//           {headlines.map((headline) => (
-// <View
-//   key={headline.id}
-//   className="relative shadow-sm flex flex-row p-4 gap-4 bg-zinc-800 rounded-2xl"
-// >
-//   <Image
-//     source={{
-//       uri: headline.imgUrl,
-//       width: 50,
-//       height: 30,
-//     }}
-//     className="flex-[1] h-full object-cover rounded-xl"
-//   />
-
-//   <View className="flex-[3]">
-//     <Text className="text-white text-xl font-medium">
-//       {headline.headline}
-//     </Text>
-//     <Text className="text-zinc-100 te">
-//       {headline.description.slice(0, 80)}...
-//     </Text>
-//   </View>
-// </View>
-//           ))}
-//         </View>
-//       </ScrollView>
-//     </View>
-//   );
-// }
