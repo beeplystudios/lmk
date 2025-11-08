@@ -1,32 +1,17 @@
-import { eq } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 import z from "zod";
-import { clique, lmk } from "../db/schema";
-import { authedProcedure } from "../middleware/auth-middleware";
+import { lmk } from "../db/schema";
+import { cliqueProcedure } from "../middleware/clique";
 import { router } from "../trpc";
 
 export const lmkRouter = router({
-  create: authedProcedure
-    .input(
-      z.object({
-        query: z.string().min(1),
-        // if the lmk is private to someone, leave this out
-        cliqueId: z.string().optional(),
-      })
-    )
+  create: cliqueProcedure
+    .input(z.object({ query: z.string().min(1) }))
     .mutation(async ({ ctx, input }) => {
-      const cliqueId = input.cliqueId
-        ? input.cliqueId
-        : // if no cliqueId provided, use the user's "Private" clique
-          await ctx.db
-            .select()
-            .from(clique)
-            .where(eq(clique.creatorId, ctx.user.id))
-            .then((res) => res[0].id);
-
       const result = await ctx.db
         .insert(lmk)
         .values({
-          cliqueId,
+          cliqueId: ctx.cliqueId,
           query: input.query,
         })
         .returning()
@@ -34,4 +19,12 @@ export const lmkRouter = router({
 
       return result;
     }),
+
+  list: cliqueProcedure.query(async ({ ctx, input }) => {
+    return await ctx.db
+      .select()
+      .from(lmk)
+      .where(eq(lmk.cliqueId, ctx.cliqueId))
+      .orderBy(desc(lmk.createdAt));
+  }),
 });
