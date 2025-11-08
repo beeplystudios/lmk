@@ -19,7 +19,10 @@ export default function ExploreScreen() {
   if (!user.data) return <Redirect href="/" />;
 
   return (
-    <SafeAreaView className="text-white p-4">
+    <SafeAreaView
+      className="text-white p-4 min-h-screen"
+      style={{ backgroundColor: "#18181b" }}
+    >
       <ScrollView stickyHeaderIndices={[1]}>
         <View className="flex items-center justify-between gap-4 flex-row">
           <Text className="text-stone-400 text-2xl font-medium font-serif">

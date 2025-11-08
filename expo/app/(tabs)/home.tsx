@@ -1,6 +1,11 @@
 import { trpc } from "@/lib/trpc";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
+import {
+  useMutation,
+  useQuery,
+  useQueryClient,
+  useSuspenseQuery,
+} from "@tanstack/react-query";
 import { Redirect } from "expo-router";
 import { useState } from "react";
 import {
@@ -21,6 +26,50 @@ const headlines = new Array(10).fill(0).map((_, idx) => ({
     "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book",
 }));
 
+const CreateLmkForm: React.FC = () => {
+  const [lmk, setLmk] = useState("");
+  const queryClient = useQueryClient();
+  const create = useMutation(trpc.lmk.create.mutationOptions());
+  const lmkList = useQuery(trpc.lmk.list.queryOptions({}));
+
+  return (
+    <View
+      // style={{ paddingTop: 64 }}
+      onLayout={(e) => {
+        // viewY.current = e.nativeEvent.layout.y;
+      }}
+      className="flex flex-row pb-8"
+    >
+      <TextInput
+        value={lmk}
+        onChangeText={setLmk}
+        placeholder="Let me know when..."
+        className="h-24 shadow-sm px-8 text-2xl grow text-zinc-200 bg-zinc-800 rounded-l-full border-[0.0125rem] border-zinc-300/70 shadow-xs placeholder:text-zinc-300"
+      />
+
+      <Pressable
+        className={`h-24 border-[0.0125rem] w-max min-w-24 px-2 border-full flex items-center justify-center rounded-r-full active:scale-95 ${
+          create.isPending || lmkList.isLoading || lmk.trim() === ""
+            ? "bg-zinc-600"
+            : "bg-[#CEF5E3]"
+        }`}
+        onPress={async () => {
+          await create.mutateAsync({ query: lmk });
+          await queryClient.refetchQueries({
+            queryKey: trpc.lmk.list.queryKey(),
+          });
+          setLmk("");
+        }}
+        disabled={create.isPending || lmkList.isLoading || lmk.trim() === ""}
+      >
+        <Text className="font-medium">
+          <Ionicons name="add" size={24} />
+        </Text>
+      </Pressable>
+    </View>
+  );
+};
+
 export default function AnimatedStickyHeader() {
   const [lmk, setLmk] = useState("");
   const user = useSuspenseQuery(trpc.me.queryOptions());
@@ -34,7 +83,7 @@ export default function AnimatedStickyHeader() {
   if (!user.data) return <Redirect href="/" />;
 
   return (
-    <View className="p-4">
+    <View className="p-4 min-h-screen" style={{ backgroundColor: "#18181b" }}>
       <Animated.ScrollView
         stickyHeaderIndices={[1]}
         showsVerticalScrollIndicator={false}
