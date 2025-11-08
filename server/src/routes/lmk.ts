@@ -1,4 +1,4 @@
-import { desc, eq } from "drizzle-orm";
+import { and, desc, eq } from "drizzle-orm";
 import z from "zod";
 import { lmk } from "../db/schema";
 import { cliqueProcedure } from "../middleware/clique";
@@ -27,4 +27,12 @@ export const lmkRouter = router({
       .where(eq(lmk.cliqueId, ctx.cliqueId))
       .orderBy(desc(lmk.createdAt));
   }),
+
+  delete: cliqueProcedure
+    .input(z.object({ lmkId: z.cuid() }))
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db
+        .delete(lmk)
+        .where(and(eq(lmk.id, input.lmkId), eq(lmk.cliqueId, ctx.cliqueId)));
+    }),
 });
