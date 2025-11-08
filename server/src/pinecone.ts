@@ -7,7 +7,7 @@ export const pc = new Pinecone({
   apiKey: PINECONE_API_KEY,
 });
 
-const INDEX_NAME = process.env.PINECONE_INDEX_NAME;
+export const INDEX_NAME = process.env.PINECONE_INDEX_NAME;
 if (!INDEX_NAME) throw "process.env.PINECONE_INDEX_NAME is not set";
 
 const index = await pc

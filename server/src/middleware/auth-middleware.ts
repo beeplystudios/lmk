@@ -23,6 +23,7 @@ export const authedProcedure = publicProcedure
 
     return next({
       ctx: {
+        ...ctx,
         user: ctx.user,
       },
     });

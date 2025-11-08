@@ -1,15 +1,14 @@
+import { Stack } from "expo-router";
+
 import "@/global.css";
-import { useColorScheme } from "@/hooks/use-color-scheme";
 import { queryClient } from "@/lib/trpc";
 import { QueryClientProvider } from "@tanstack/react-query";
 import Constants from "expo-constants";
 import * as Device from "expo-device";
 import * as Notifications from "expo-notifications";
-import { Stack } from "expo-router";
-import { StatusBar } from "expo-status-bar";
-import * as SystemUI from "expo-system-ui";
+
 import { useEffect, useState } from "react";
-import { Platform, View } from "react-native";
+import { Platform } from "react-native";
 import "react-native-reanimated";
 
 Notifications.setNotificationHandler({
@@ -100,12 +99,11 @@ async function registerForPushNotificationsAsync() {
 // SystemUI.setBackgroundColorAsync("black");
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
+  // const colorScheme = useColorScheme();
 
-  useEffect(() => {
-    // Make the native system window background dark
-    SystemUI.setBackgroundColorAsync("#18181b");
-  }, []);
+  // useEffect(() => {
+  // Make the native system window background dark
+  // }, []);
 
   const [expoPushToken, setExpoPushToken] = useState<string>();
   const [notification, setNotification] = useState<
@@ -140,19 +138,13 @@ export default function RootLayout() {
   return (
     <QueryClientProvider client={queryClient}>
       {/* <ThemeProvider value={DarkTheme}> */}
-      <View style={{ flex: 1, backgroundColor: "#18181b" }}>
-        <Stack
-          screenOptions={{
-            contentStyle: {
-              backgroundColor: "#18181b",
-            },
-          }}
-        >
-          <Stack.Screen name="index" options={{ headerShown: false }} />
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        </Stack>
-        <StatusBar style="light" />
-      </View>
+      {/* <View className="flex-1"> */}
+      <Stack>
+        <Stack.Screen name="index" options={{ headerShown: false }} />
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      </Stack>
+      {/* <StatusBar style="light" /> */}
+      {/* </View> */}
 
       {/* </ThemeProvider> */}
     </QueryClientProvider>

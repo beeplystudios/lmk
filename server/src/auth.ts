@@ -2,6 +2,7 @@ import { expo } from "@better-auth/expo";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { db } from "./db";
+import { clique, cliqueUser } from "./db/schema";
 
 const EXPO_PUBLIC_API_URL = process.env.EXPO_PUBLIC_API_URL;
 const BETTER_AUTH_SECRET = process.env.BETTER_AUTH_SECRET;
@@ -23,6 +24,30 @@ export const auth = betterAuth({
     google: {
       clientId: GOOGLE_CLIENT_ID,
       clientSecret: GOOGLE_CLIENT_SECRET,
+    },
+  },
+  databaseHooks: {
+    user: {
+      create: {
+        after: async (user, ctx) => {
+          // Create a "Private" clique for each user after they sign up
+          await db.transaction(async (tx) => {
+            const { id: cliqueId } = await tx
+              .insert(clique)
+              .values({
+                name: "Private",
+                creatorId: user.id,
+              })
+              .returning({ id: clique.id })
+              .then((res) => res[0]);
+
+            await tx.insert(cliqueUser).values({
+              cliqueId,
+              userId: user.id,
+            });
+          });
+        },
+      },
     },
   },
 });

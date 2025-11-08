@@ -1,9 +1,11 @@
 import { initTRPC } from "@trpc/server";
 import { Context as HonoContext } from "hono";
+import { db } from "./db";
 
 export const createTRPCContext = (ctx: HonoContext) => {
   return {
     honoCtx: ctx,
+    db,
   };
 };
 
