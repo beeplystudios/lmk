@@ -5,7 +5,7 @@
 import { Index } from "@pinecone-database/pinecone";
 import { eq } from "drizzle-orm";
 import { db } from "../db";
-import { postsTable } from "../db/schema";
+import { post } from "../db/schema";
 import { INDEX_NAME, pc } from "../pinecone";
 import { expandRawNewsPost } from "./expand";
 import { FeedWithTransformer } from "./feeds";
@@ -22,6 +22,7 @@ export interface RawPost {
 
   link: string;
   image: string | null;
+  datePublished: Date | null;
 }
 
 /**
@@ -74,22 +75,22 @@ export const ingestTransformer = async (feed: FeedWithTransformer) => {
   };
 
   for (const rawPost of results) {
-    const post = await db
+    const newPost = await db
       .select()
-      .from(postsTable)
-      .where(eq(postsTable.link, rawPost.link))
+      .from(post)
+      .where(eq(post.link, rawPost.link))
       .limit(1)
       .then((res) => res[0]);
 
-    if (post) {
+    if (newPost) {
       console.log("ingest: skipping existing post", rawPost.title);
 
       insertBatched({
-        _id: post.id,
-        embed: post.betterHeadline,
-        description: post.description,
-        title: post.title,
-        source: post.source,
+        _id: newPost.id,
+        embed: newPost.betterHeadline,
+        description: newPost.description,
+        title: newPost.title,
+        source: newPost.source,
       });
 
       continue;
@@ -98,11 +99,11 @@ export const ingestTransformer = async (feed: FeedWithTransformer) => {
     const ingestStart = Date.now();
     console.log("ingest: processing post", rawPost.title);
     const betterPost = await expandRawNewsPost(rawPost);
-    console.log(betterPost);
+    console.log("ingest: --> better headline:", betterPost.headline);
 
     // Upsert into posts
     const existing = await db
-      .insert(postsTable)
+      .insert(post)
       .values({
         source: rawPost.source,
         title: rawPost.title,
@@ -110,17 +111,9 @@ export const ingestTransformer = async (feed: FeedWithTransformer) => {
         description: rawPost.description,
         link: rawPost.link,
         image: rawPost.image,
+        datePublished: rawPost.datePublished,
       })
-      .onConflictDoUpdate({
-        target: postsTable.link,
-        set: {
-          source: rawPost.source,
-          title: rawPost.title,
-          description: rawPost.description,
-          image: rawPost.image,
-        },
-      })
-      .returning({ id: postsTable.id })
+      .returning({ id: post.id })
       .then((res) => res[0]);
 
     // Batch updates before sending to Pinecone

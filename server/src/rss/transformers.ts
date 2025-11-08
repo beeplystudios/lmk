@@ -16,7 +16,7 @@ const NYTimesTransformer: TransformerType = async (url: string) => {
   });
   const feed = await parser.parseURL(url);
 
-  const items = [];
+  const items: RawPost[] = [];
 
   for (const item of feed.items) {
     const categories = (item.categories ?? []).map((cat) => cat["_"]); // TODO: Use categories?
@@ -27,6 +27,7 @@ const NYTimesTransformer: TransformerType = async (url: string) => {
           (item["media:description"] ?? "")
         : null;
     const image = item["media:content"] ? item["media:content"].$.url : null;
+    const datePublished = item.pubDate ? new Date(item.pubDate) : null;
 
     if (!item.title) continue;
     if (!item.link) continue;
@@ -37,6 +38,7 @@ const NYTimesTransformer: TransformerType = async (url: string) => {
       link: item.link,
       description,
       image,
+      datePublished: datePublished ?? undefined,
     });
   }
 
