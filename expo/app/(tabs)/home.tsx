@@ -96,16 +96,19 @@ export default function AnimatedStickyHeader() {
             className="flex flex-row pb-8"
           >
             <TextInput
+              value={lmk}
+              onChangeText={setLmk}
               placeholder="Let me know when..."
               className="h-24 shadow-sm px-8 text-lg grow text-zinc-200 bg-zinc-800 rounded-l-full border-[0.0125rem] border-zinc-300/70 shadow-xs placeholder:text-zinc-300"
             />
 
             <Pressable
-              className="h-24 bg-[#CEF5E3] border-[0.0125rem] w-max min-w-24 px-2 border-full flex items-center justify-center rounded-r-full"
+              className="h-24 bg-[#CEF5E3] border-[0.0125rem] w-max min-w-24 px-2 border-full flex items-center justify-center rounded-r-full active:scale-95"
               onPress={() => {
-                create.mutate({ query: lmk });
                 console.log(lmk);
-                setLmk("");
+                // create.mutate({ query: lmk });
+                // console.log(lmk);
+                // setLmk("");
               }}
             >
               <Text className="font-medium">
