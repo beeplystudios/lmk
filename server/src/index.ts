@@ -1,8 +1,17 @@
+import { appRouter } from "@/routes";
+import { trpcServer } from "@hono/trpc-server";
 import { Hono } from "hono";
 
 const app = new Hono();
 
 app.get("/", (c) => c.text("Hono!"));
+app.use(
+  "/api/trpc/*",
+  trpcServer({
+    endpoint: "/api/trpc",
+    router: appRouter,
+  })
+);
 
 const server = Bun.serve({
   fetch: app.fetch,
@@ -10,3 +19,5 @@ const server = Bun.serve({
 });
 
 console.log(`lmk server running at ${server.url}`);
+
+export type AppRouter = typeof appRouter;
