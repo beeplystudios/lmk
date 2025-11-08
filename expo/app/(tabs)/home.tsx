@@ -1,4 +1,3 @@
-import { signOutOptions } from "@/lib/auth-client";
 import { trpc } from "@/lib/trpc";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
@@ -27,9 +26,9 @@ export default function AnimatedStickyHeader() {
   const viewY = useRef(0);
   const scrollY = useRef(new Animated.Value(0)).current;
 
+  const [lmk, setLmk] = useState("");
   const user = useSuspenseQuery(trpc.me.queryOptions());
-
-  const signOut = useMutation(signOutOptions);
+  const create = useMutation(trpc.lmk.create.mutationOptions());
 
   useEffect(() => console.log(isSticky), [isSticky]);
 
@@ -100,9 +99,16 @@ export default function AnimatedStickyHeader() {
               className="h-24 shadow-sm px-8 text-lg grow text-zinc-200 bg-zinc-800 rounded-l-full border-[0.0125rem] border-zinc-300/70 shadow-xs placeholder:text-zinc-300"
             />
 
-            <Pressable className="h-24 bg-[#CEF5E3] border-[0.0125rem] w-max min-w-24 px-2 border-full flex items-center justify-center rounded-r-full">
+            <Pressable
+              className="h-24 bg-[#CEF5E3] border-[0.0125rem] w-max min-w-24 px-2 border-full flex items-center justify-center rounded-r-full"
+              onPress={() => {
+                create.mutate({ query: lmk });
+                console.log(lmk);
+                setLmk("");
+              }}
+            >
               <Text className="font-medium">
-                <Ionicons name="add-circle" size={24} />
+                <Ionicons name="add" size={24} />
               </Text>
             </Pressable>
           </View>
@@ -151,7 +157,6 @@ export default function AnimatedStickyHeader() {
   );
 }
 
-// export default function HomeScreen() {
 //   const user = useSuspenseQuery(trpc.me.queryOptions());
 
 //   const signOut = useMutation(signOutOptions);
