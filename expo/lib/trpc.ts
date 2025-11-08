@@ -6,8 +6,11 @@ import { createTRPCOptionsProxy } from "@trpc/tanstack-react-query";
 
 export const queryClient = new QueryClient();
 
+const EXPO_PUBLIC_API_URL = process.env.EXPO_PUBLIC_API_URL;
+if (!EXPO_PUBLIC_API_URL) throw "process.env.EXPO_PUBLIC_API_URL is not set";
+
 const trpcClient = createTRPCClient<AppRouter>({
-  links: [httpBatchLink({ url: process.env.EXPO_PUBLIC_API_URL })],
+  links: [httpBatchLink({ url: `${EXPO_PUBLIC_API_URL}/api/trpc` })],
 });
 
 export const trpc = createTRPCOptionsProxy<AppRouter>({

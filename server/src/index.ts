@@ -1,7 +1,7 @@
-import { appRouter } from "@/routes";
 import { trpcServer } from "@hono/trpc-server";
 import { Hono } from "hono";
 import { auth } from "./auth";
+import { appRouter } from "./routes";
 
 const app = new Hono();
 
