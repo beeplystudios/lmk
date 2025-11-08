@@ -1,3 +1,10 @@
+// Raw RSS feeds
+// ---(cleanup + object mixing)-> RawNewsPost
+// ---(LLM + object mixing)--> IngestibleNewsPost --> Pinecone!
+
+/**
+ * A news post directly extracted from an RSS feed.
+ */
 export interface RawNewsPost {
   title: string;
   /** Where the post came from. e.g. "NYTimes", "Reuters", "Associated Press" */
