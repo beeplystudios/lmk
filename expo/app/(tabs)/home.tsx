@@ -168,6 +168,11 @@ export default function AnimatedStickyHeader() {
                     <Ionicons name="time" size={24} color="#fde68a" />
                   )}
                 </View>
+                {
+                  <Text className="text-white">
+                    {JSON.stringify(lmk.answers)}
+                  </Text>
+                }
                 {lmk.answered && (
                   <View>
                     <Text className="text-stone-400 font-serif">

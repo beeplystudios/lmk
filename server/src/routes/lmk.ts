@@ -2,6 +2,7 @@ import { and, desc, eq } from "drizzle-orm";
 import z from "zod";
 import { lmk } from "../db/schema";
 import { cliqueProcedure } from "../middleware/clique";
+import { INDEX_NAME, pc } from "../pinecone";
 import { router } from "../trpc";
 
 export const lmkRouter = router({
@@ -21,11 +22,32 @@ export const lmkRouter = router({
     }),
 
   list: cliqueProcedure.query(async ({ ctx, input }) => {
-    return await ctx.db
+    const lmks = await ctx.db
       .select()
       .from(lmk)
       .where(eq(lmk.cliqueId, ctx.cliqueId))
+      .limit(5)
       .orderBy(desc(lmk.createdAt));
+
+    const lmksWithQueryResults = await Promise.all(
+      lmks.map(async (lmkItem) => {
+        return {
+          ...lmkItem,
+          answers: await pc
+            .index(INDEX_NAME)
+            .namespace("posts")
+            .searchRecords({
+              query: {
+                inputs: { text: lmkItem.query },
+                topK: 3,
+              },
+            })
+            .then((res) => res.result.hits.filter((hit) => hit._score > 0.3)),
+        };
+      })
+    );
+
+    return lmksWithQueryResults;
   }),
 
   delete: cliqueProcedure
