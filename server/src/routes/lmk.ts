@@ -156,8 +156,14 @@ export const lmkRouter = router({
   delete: cliqueProcedure
     .input(z.object({ lmkId: z.cuid() }))
     .mutation(async ({ ctx, input }) => {
-      await ctx.db
-        .delete(lmk)
-        .where(and(eq(lmk.id, input.lmkId), eq(lmk.cliqueId, ctx.cliqueId)));
+      await ctx.db.transaction(async (tx) => {
+        const removedLmk = await tx
+          .delete(lmk)
+          .where(and(eq(lmk.id, input.lmkId), eq(lmk.cliqueId, ctx.cliqueId)))
+          .returning()
+          .then((res) => res[0]);
+
+        await pc.index(INDEX_NAME).namespace("lmks").deleteOne(removedLmk.id);
+      });
     }),
 });
