@@ -16,17 +16,19 @@ const headlines = new Array(10).fill(0).map((_, idx) => ({
 export default function ExploreScreen() {
   const user = useSuspenseQuery(trpc.me.queryOptions());
 
+  const data = useSuspenseQuery(trpc.lmk.explore.queryOptions({}));
+
   if (!user.data) return <Redirect href="/" />;
 
   return (
-    <SafeAreaView
-      className="text-white p-4 min-h-screen"
-      style={{ backgroundColor: "#18181b" }}
-    >
-      <ScrollView stickyHeaderIndices={[1]}>
-        <View className="flex items-center justify-between gap-4 flex-row">
-          <Text className="text-stone-400 text-2xl font-medium font-serif">
-            Good morning, {user.data?.name.split(" ")[0]}
+    <ScrollView stickyHeaderIndices={[1]}>
+      <SafeAreaView
+        className="text-white p-4 min-h-screen"
+        style={{ backgroundColor: "#18181b" }}
+      >
+        <View className="flex items-center justify-between gap-4 flex-row mb-8">
+          <Text className="text-white font-bold font-serif text-4xl">
+            Explore
           </Text>
 
           <Image
@@ -35,14 +37,36 @@ export default function ExploreScreen() {
             }}
             className="size-12 rounded-full"
           />
-          {/* <Button title="Logout" onPress={() => signOut.mutate()} /> */}
         </View>
 
         <View className="pb-24 flex flex-col gap-4">
-          <Text className="text-white font-medium font-serif text-xl -mb-2">
-            Your LMKs
-          </Text>
-          {headlines.map((headline) => (
+          {/* <Text>{JSON.stringify(data.data, null, 2)}</Text> */}
+          {data.data.map((lmk) => (
+            <View key={lmk._id} className="bg-zinc-800 p-4 rounded-xl">
+              <View className="flex flex-row gap-4 my-4">
+                {/* <Image
+                        source={{
+                          uri: "https://www.aljazeera.com/wp-content/uploads/2025/11/ap_690ad7a2c7478-1762318242.jpg?resize=730%2C410&quality=80",
+                          width: 100,
+                          height: 50,
+                        }}
+                        className="flex-1 h-full object-cover rounded-md"
+                      /> */}
+                <View className="flex-[2]">
+                  <Text className="text-white text-lg font-medium font-serif">
+                    {lmk.fields.title}
+                  </Text>
+                  <Text className="text-zinc-400">
+                    {lmk.fields.description}
+                  </Text>
+                  <Text className="text-stone-400 mt-2">
+                    From the {lmk.fields.source}
+                  </Text>
+                </View>
+              </View>
+            </View>
+          ))}
+          {/* {headlines.map((headline) => (
             <View
               key={headline.id}
               className="relative shadow-sm flex flex-row items-start p-4 gap-4 bg-zinc-800 rounded-2xl"
@@ -65,9 +89,9 @@ export default function ExploreScreen() {
                 </Text>
               </View>
             </View>
-          ))}
+          ))} */}
         </View>
-      </ScrollView>
-    </SafeAreaView>
+      </SafeAreaView>
+    </ScrollView>
   );
 }

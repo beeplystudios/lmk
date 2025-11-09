@@ -55,9 +55,7 @@ const CreateLmkForm: React.FC = () => {
         }`}
         onPress={async () => {
           await create.mutateAsync({ query: lmk });
-          await queryClient.refetchQueries({
-            queryKey: trpc.lmk.list.queryKey(),
-          });
+          await lmkList.refetch();
           setLmk("");
         }}
         disabled={create.isPending || lmkList.isLoading || lmk.trim() === ""}
