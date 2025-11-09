@@ -38,7 +38,7 @@ const server = Bun.serve({
 
 console.log(chalk.green(`lmk server running at ${server.url}`));
 
-const CHECK_INTERVAL = 60 * 60; // 1 hour
+const CHECK_INTERVAL = 60 * 60 * 1000; // 1 hour
 if (process.env.DO_INGEST)
   setInterval(() => {
     let currentBatch: NotificationItem[] = [];
