@@ -1,7 +1,12 @@
 import { trpc } from "@/lib/trpc";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { TRPCRouterOutputs } from "@lmk/server";
-import { useMutation, useQuery, useSuspenseQuery } from "@tanstack/react-query";
+import {
+  useMutation,
+  useQuery,
+  useQueryClient,
+  useSuspenseQuery,
+} from "@tanstack/react-query";
 import { Redirect } from "expo-router";
 import { useRef, useState } from "react";
 import {
@@ -25,9 +30,21 @@ const CliqueCard = ({
       cliqueId: clique.id,
     })
   );
+  const queryClient = useQueryClient();
   const actionSheetRef = useRef<ActionSheetRef>(null);
   const [email, setEmail] = useState("");
-  const invite = useMutation(trpc.clique.invite.mutationOptions());
+  const invite = useMutation(
+    trpc.clique.invite.mutationOptions({
+      onMutate() {
+        actionSheetRef.current?.hide();
+      },
+      onSuccess() {
+        return queryClient.invalidateQueries({
+          queryKey: trpc.clique.pathKey(),
+        });
+      },
+    })
+  );
 
   return (
     <>

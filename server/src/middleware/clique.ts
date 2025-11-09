@@ -16,6 +16,8 @@ export const cliqueProcedure = authedProcedure
           .where(eq(clique.creatorId, ctx.user.id))
           .then((res) => res[0].id);
 
+    console.log(cliqueId);
+
     // Ensure the user is a member of the clique
     const isMember = await ctx.db
       .select()
