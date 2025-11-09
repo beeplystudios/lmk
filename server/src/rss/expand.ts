@@ -14,6 +14,7 @@ export const EXAMPLE_RAW_NEWS_POST = [
       "https://static01.nyt.com/images/2025/11/07/multimedia/pol-biden-bclm/pol-biden-bclm-mediumSquareAt3X.jpg",
     imageDescription: null,
     datePublished: new Date("2025-11-07T12:00:00Z"),
+    categories: [],
   },
   {
     source: "NYTimes",
@@ -26,6 +27,7 @@ export const EXAMPLE_RAW_NEWS_POST = [
       "https://static01.nyt.com/images/2025/11/03/multimedia/00nat-portland-rulingHFO/03trump-blog-portland-wzbh-mediumSquareAt3X.jpg",
     imageDescription: null,
     datePublished: new Date("2025-11-07T12:00:00Z"),
+    categories: [],
   },
   {
     source: "NYTimes",
@@ -38,6 +40,7 @@ export const EXAMPLE_RAW_NEWS_POST = [
       "https://static01.nyt.com/images/2025/11/07/multimedia/dc-pardons2-qcbj/dc-pardons2-qcbj-mediumSquareAt3X.jpg",
     imageDescription: null,
     datePublished: new Date("2025-11-07T12:00:00Z"),
+    categories: [],
   },
 ] satisfies RawPost[];
 
@@ -76,6 +79,10 @@ const agent = createAgent({
 export const expandRawNewsPost = async (rawNewsPost: RawPost) => {
   const userPrompt = `Title: ${rawNewsPost.title}
 Description: ${rawNewsPost.description}
+Image Description: ${rawNewsPost.imageDescription ?? "None"}
+Categories: ${
+    rawNewsPost.categories ? rawNewsPost.categories.join(", ") : "None"
+  }
   
 Rewrite the above news article title and description into a concise headline (max 200 characters).`;
   const response = await agent.invoke({

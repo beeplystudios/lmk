@@ -153,7 +153,7 @@ export const ingestTransformer = async (
     const upsertedPost = {
       _id: existing.id,
       embed: betterPost.headline,
-      description: rawPost.description,
+      description: `${rawPost.description}`,
       title: rawPost.title,
       source: rawPost.source,
     } satisfies IngestiblePost;
