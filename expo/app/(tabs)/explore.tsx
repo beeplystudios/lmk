@@ -2,7 +2,6 @@ import { trpc } from "@/lib/trpc";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { Redirect } from "expo-router";
 import { Image, ScrollView, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 const headlines = new Array(10).fill(0).map((_, idx) => ({
   id: idx + "",
@@ -21,12 +20,12 @@ export default function ExploreScreen() {
   if (!user.data) return <Redirect href="/" />;
 
   return (
-    <ScrollView stickyHeaderIndices={[1]}>
-      <SafeAreaView
-        className="text-white p-4 min-h-screen"
-        style={{ backgroundColor: "#18181b" }}
-      >
-        <View className="flex items-center justify-between gap-4 flex-row mb-8">
+    <View
+      className="text-white p-4 min-h-screen"
+      style={{ backgroundColor: "#18181b" }}
+    >
+      <ScrollView showsVerticalScrollIndicator={false}>
+        <View className="flex items-center justify-between gap-4 flex-row mb-8 pt-24">
           <Text className="text-white font-bold font-serif text-4xl">
             Explore
           </Text>
@@ -72,7 +71,7 @@ export default function ExploreScreen() {
             </View>
           ))}
         </View>
-      </SafeAreaView>
-    </ScrollView>
+      </ScrollView>
+    </View>
   );
 }
