@@ -5,10 +5,6 @@ import { Pressable, Text, View } from "react-native";
 
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import ReanimatedSwipeable from "react-native-gesture-handler/ReanimatedSwipeable";
-import Reanimated, {
-  SharedValue,
-  useAnimatedStyle,
-} from "react-native-reanimated";
 
 const dateFormatter = new Intl.DateTimeFormat("en", {
   year: "numeric",
@@ -16,34 +12,13 @@ const dateFormatter = new Intl.DateTimeFormat("en", {
   day: "numeric",
 });
 
-function RightAction(prog: SharedValue<number>, drag: SharedValue<number>) {
-  const styleAnimation = useAnimatedStyle(() => {
-    return {
-      transform: [{ translateX: drag.value + 70 }],
-    };
-  });
-
-  return (
-    <Reanimated.View
-      style={styleAnimation}
-      className="transition-transform my-2 rounded-2xl w-[70px] flex justify-center items-center bg-rose-500"
-    >
-      <Ionicons name="trash-bin-outline" size={20} />
-    </Reanimated.View>
-  );
-}
-
 export const LmkCard = ({
   lmk,
 }: {
   lmk: TRPCRouterOutputs["lmk"]["list"][number] & { answered: boolean };
 }) => (
   <GestureHandlerRootView>
-    <ReanimatedSwipeable
-      overshootRight={false}
-      friction={1.25}
-      renderRightActions={RightAction}
-    >
+    <ReanimatedSwipeable overshootRight={false} friction={1.25}>
       <View className="relative shadow-sm flex flex-col p-4 gap-4 bg-zinc-800 rounded-2xl my-2">
         <View className="flex-[3] flex flex-row items-center justify-between gap-1">
           <View className="flex-[4]">
