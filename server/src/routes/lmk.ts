@@ -154,7 +154,7 @@ export const lmkRouter = router({
   }),
 
   delete: cliqueProcedure
-    .input(z.object({ lmkId: z.cuid() }))
+    .input(z.object({ lmkId: z.cuid2() }))
     .mutation(async ({ ctx, input }) => {
       await ctx.db.transaction(async (tx) => {
         const removedLmk = await tx

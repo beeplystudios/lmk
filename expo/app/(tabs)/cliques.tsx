@@ -97,7 +97,7 @@ const CliqueCard = ({
                     onChangeText={setEmail}
                     placeholder="Add someone to your clique"
                     placeholderClassName="text-lg text-zinc-200"
-                    className="h-12 shadow-sm px-4 text-lg grow text-zinc-200 bg-zinc-700 rounded-2xl border-[0.0125rem] border-zinc-300/70"
+                    className="h-12 shadow-sm px-4 flex-1 text-lg grow text-zinc-200 bg-zinc-700 rounded-2xl border-[0.0125rem] border-zinc-300/70"
                   />
                   <Pressable
                     className="h-12 bg-[#CEF5E3] px-4 gap-2 flex flex-row items-center justify-center rounded-2xl shadow-sm border-[0.0125rem] border-blue-100 active:scale-95"
@@ -240,7 +240,7 @@ export default function CliquesScreen() {
                   <TextInput
                     value={name}
                     onChangeText={setName}
-                    placeholder="Let me know when..."
+                    placeholder="Choose a name for your clique..."
                     placeholderClassName="text-lg text-zinc-200"
                     className="h-12 shadow-sm px-4 text-lg grow text-zinc-200 bg-zinc-700 rounded-2xl border-[0.0125rem] border-zinc-300/70"
                   />

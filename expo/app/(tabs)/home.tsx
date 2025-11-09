@@ -1,12 +1,7 @@
 import { LmkCard } from "@/components/ui/cards";
 import { trpc } from "@/lib/trpc";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import {
-  useMutation,
-  useQuery,
-  useQueryClient,
-  useSuspenseQuery,
-} from "@tanstack/react-query";
+import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
 import { Redirect } from "expo-router";
 import { useCallback, useState } from "react";
 import {
@@ -19,50 +14,6 @@ import {
   TextInput,
   View,
 } from "react-native";
-
-const CreateLmkForm: React.FC = () => {
-  const [lmk, setLmk] = useState("");
-  const queryClient = useQueryClient();
-  const create = useMutation(trpc.lmk.create.mutationOptions());
-  const lmkList = useQuery(trpc.lmk.list.queryOptions({}));
-
-  return (
-    <View
-      // style={{ paddingTop: 64 }}
-      onLayout={(e) => {
-        // viewY.current = e.nativeEvent.layout.y;
-      }}
-      className="flex flex-row pb-8"
-    >
-      <TextInput
-        value={lmk}
-        onChangeText={setLmk}
-        placeholder="Let me know when..."
-        placeholderClassName="text-zinc-200 text-2xl"
-        placeholderTextColor="#A1A1AA"
-        className="h-16 shadow-sm px-8 text-2xl grow text-zinc-200 bg-zinc-800 rounded-l-full border-[0.0125rem] border-zinc-300/70 shadow-xs"
-      />
-
-      <Pressable
-        className={`h-16 border-[0.0125rem] w-max min-w-24 px-2 border-full flex items-center justify-center rounded-r-full active:scale-95 ${
-          create.isPending || lmkList.isLoading || lmk.trim() === ""
-            ? "bg-zinc-600"
-            : "bg-[#CEF5E3]"
-        }`}
-        onPress={async () => {
-          await create.mutateAsync({ query: lmk });
-          await lmkList.refetch();
-          setLmk("");
-        }}
-        disabled={create.isPending || lmkList.isLoading || lmk.trim() === ""}
-      >
-        <Text className="font-medium">
-          <Ionicons name="add" size={24} />
-        </Text>
-      </Pressable>
-    </View>
-  );
-};
 
 export default function AnimatedStickyHeader() {
   const [lmk, setLmk] = useState("");
@@ -124,7 +75,7 @@ export default function AnimatedStickyHeader() {
               onChangeText={setLmk}
               placeholder="Let me know when..."
               placeholderClassName="text-lg text-zinc-200"
-              className="h-16 shadow-sm px-8 text-lg grow text-zinc-200 bg-zinc-800 rounded-l-full border-[0.0125rem] border-zinc-300/70 border-r-0 shadow-xs"
+              className="h-16 shadow-sm px-8 text-lg grow overflow-scroll flex-1 text-zinc-200 bg-zinc-800 rounded-l-full border-[0.0125rem] border-zinc-300/70 border-r-0 shadow-xs"
             />
 
             <Pressable
