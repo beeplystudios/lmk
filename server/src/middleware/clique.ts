@@ -5,7 +5,7 @@ import { clique, cliqueUser } from "../db/schema";
 import { authedProcedure } from "./auth-middleware";
 
 export const cliqueProcedure = authedProcedure
-  .input(z.object({ cliqueId: z.cuid().optional() }))
+  .input(z.object({ cliqueId: z.cuid2().optional() }))
   .use(async ({ ctx, input, next }) => {
     const cliqueId = input.cliqueId
       ? input.cliqueId
