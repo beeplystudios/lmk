@@ -38,51 +38,52 @@ const server = Bun.serve({
 console.log(chalk.green(`lmk server running at ${server.url}`));
 
 let CHECK_INTERVAL = 60 * 60; // 1 hour
-setInterval(() => {
-  let currentBatch: NotificationItem[] = [];
+if (process.env.DO_INGEST)
+  setInterval(() => {
+    let currentBatch: NotificationItem[] = [];
 
-  ingestAllFeeds({
-    reportNewPost: async (post) => {
-      console.log(
-        chalk.green(
-          "notification: new post ingested! checking against database and maybe notifying users...\n",
-          post.title
-        )
-      );
-
-      const notifications = await checkNewPost(post);
-      currentBatch = currentBatch.concat(notifications);
-
-      if (currentBatch.length >= 50) {
-        const batchToSend = currentBatch;
-        currentBatch = [];
-
+    ingestAllFeeds({
+      reportNewPost: async (post) => {
         console.log(
           chalk.green(
-            `notification: sending batch of ${batchToSend.length} notifications...`
+            "notification: new post ingested! checking against database and maybe notifying users...\n",
+            post.title
           )
         );
 
-        // send emails
-        for (const notification of batchToSend) {
+        const notifications = await checkNewPost(post);
+        currentBatch = currentBatch.concat(notifications);
+
+        if (currentBatch.length >= 50) {
+          const batchToSend = currentBatch;
+          currentBatch = [];
+
           console.log(
-            chalk.dim(
-              `notification: --> sending email notification to ${notification.to}...`
+            chalk.green(
+              `notification: sending batch of ${batchToSend.length} notifications...`
             )
           );
 
-          await sendEmail(
-            notification.email,
-            createMatchEmail(
-              notification.title,
-              notification.link,
-              notification.source
-            )
-          );
+          // send emails
+          for (const notification of batchToSend) {
+            console.log(
+              chalk.dim(
+                `notification: --> sending email notification to ${notification.to}...`
+              )
+            );
+
+            await sendEmail(
+              notification.email,
+              createMatchEmail(
+                notification.title,
+                notification.link,
+                notification.source
+              )
+            );
+          }
         }
-      }
-    },
-  });
-}, CHECK_INTERVAL);
+      },
+    });
+  }, CHECK_INTERVAL);
 
 export type AppRouter = typeof appRouter;
