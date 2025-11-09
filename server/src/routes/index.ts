@@ -18,9 +18,9 @@ export const appRouter = router({
 
   expoPushToken: authedProcedure
     .input(z.object({ token: z.string() }))
-    .mutation(({ ctx, input }) => {
+    .mutation(async ({ ctx, input }) => {
       if (Expo.isExpoPushToken(input.token))
-        ctx.db
+        await ctx.db
           .update(user)
           .set({ token: input.token })
           .where(eq(user.id, ctx.user.id));
