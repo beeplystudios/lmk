@@ -42,151 +42,253 @@ const NYTimesTransformer: TransformerType = async (url: string) => {
   return items;
 };
 
-// const CNBCTransformer: TransformerType = async (url: string) => {
-//   const parser = new Parser();
-//   const feed = await parser.parseURL(url);
+const CNBCTransformer: TransformerType = async (url: string) => {
+  const parser = new Parser();
+  const feed = await parser.parseURL(url);
+  const items: RawPost[] = [];
 
-//   return feed.items.map((item) => {
-//     return {
-//       source: "CNBC",
+  for (const item of feed.items) {
+    const title = item.title?.trim();
+    const link = item.link?.trim();
+    const description = (item.contentSnippet ?? item.content)?.trim();
 
-//       title: item.title ?? "Untitled",
-//       link: item.link ?? null,
-//       description: item.content ?? null,
-//       image: null,
-//     };
-//   });
-// };
+    // Ignore posts without title + description, or without link
+    if (!title || !description) continue;
+    if (!link) continue;
 
-// const GuardianTransformer: TransformerType = async (url: string) => {
-//   const parser = new Parser({
-//     customFields: {
-//       item: ["media:content"],
-//     },
-//   });
-//   const feed = await parser.parseURL(url);
+    const categories = (item.categories ?? []).map((cat) => cat["_"]); // TODO: Use categories?
 
-//   return feed.items.map((item) => {
-//     const categories = item.categories.map((cat) => cat["_"]); // TODO: Use categories?
-//     const image = item["media:content"] ? item["media:content"].$.url : null;
+    items.push({
+      source: "CNBC",
+      title,
+      link,
+      description,
+      image: null,
+      imageDescription: null,
+      categories: categories.length > 0 ? categories : null,
+      datePublished: item.pubDate ? new Date(item.pubDate) : undefined,
+    });
+  }
 
-//     return {
-//       source: "The Guardian",
+  return items;
+};
 
-//       title: item.title ?? "Untitled",
-//       link: item.link ?? null,
-//       description: item.contentSnippet ?? null, // Normal `content` includes HTML
-//       image,
-//     };
-//   });
-// };
+const GuardianTransformer: TransformerType = async (url: string) => {
+  const parser = new Parser({
+    customFields: {
+      item: ["media:content"],
+    },
+  });
+  const feed = await parser.parseURL(url);
+  const items: RawPost[] = [];
 
-// const BBCTransformer: TransformerType = async (url: string) => {
-//   const parser = new Parser({
-//     customFields: {
-//       item: ["media:thumbnail"],
-//     },
-//   });
-//   const feed = await parser.parseURL(url);
+  for (const item of feed.items) {
+    const title = item.title?.trim();
+    const link = item.link?.trim();
+    const description = item.contentSnippet?.trim(); // Prefer snippet to avoid HTML
 
-//   return feed.items.map((item) => {
-//     const image = item["media:thumbnail"]
-//       ? item["media:thumbnail"].$.url
-//       : null;
+    // Ignore posts without title + description, or without link
+    if (!title || !description) continue;
+    if (!link) continue;
 
-//     return {
-//       source: "BBC",
+    const categories = (item.categories ?? []).map((cat) => cat["_"]); // TODO: Use categories?
+    const image = item["media:content"] ? item["media:content"].$.url : null;
 
-//       title: item.title ?? "Untitled",
-//       link: item.link ?? null,
-//       description: item.content ?? null,
-//       image,
-//     };
-//   });
-// };
+    items.push({
+      source: "The Guardian",
+      title,
+      link,
+      description,
+      image,
+      categories: categories.length > 0 ? categories : null,
+      imageDescription: null,
+      datePublished: item.pubDate ? new Date(item.pubDate) : undefined,
+    });
+  }
 
-// const NPRTransformer: TransformerType = async (url: string) => {
-//   const parser = new Parser();
-//   const feed = await parser.parseURL(url);
+  return items;
+};
 
-//   return feed.items.map((item) => {
-//     return {
-//       source: "NPR",
+const BBCTransformer: TransformerType = async (url: string) => {
+  const parser = new Parser({
+    customFields: {
+      item: ["media:thumbnail"],
+    },
+  });
+  const feed = await parser.parseURL(url);
+  const items: RawPost[] = [];
 
-//       title: item.title ?? "Untitled",
-//       link: item.link ?? null,
-//       description: item.content ?? null,
-//       image: null,
-//     };
-//   });
-// };
+  for (const item of feed.items) {
+    const title = item.title?.trim();
+    const link = item.link?.trim();
+    const description = (item.contentSnippet ?? item.content)?.trim();
 
-// const WiredTransformer: TransformerType = async (url: string) => {
-//   const parser = new Parser({
-//     customFields: {
-//       item: ["media:thumbnail"],
-//     },
-//   });
-//   const feed = await parser.parseURL(url);
+    // Ignore posts without title + description, or without link
+    if (!title || !description) continue;
+    if (!link) continue;
 
-//   return feed.items.map((item) => {
-//     const image = item["media:thumbnail"]
-//       ? item["media:thumbnail"].$.url
-//       : null;
-//     return {
-//       source: "Wired",
+    const categories = (item.categories ?? []).map((cat) => cat["_"]); // TODO: Use categories?
+    const image = item["media:thumbnail"]
+      ? item["media:thumbnail"].$.url
+      : null;
 
-//       title: item.title ?? "Untitled",
-//       link: item.link ?? null,
-//       description: item.content ?? null,
-//       image,
-//     };
-//   });
-// };
+    items.push({
+      source: "BBC",
+      title,
+      link,
+      description,
+      image,
+      imageDescription: null,
+      categories: categories.length > 0 ? categories : null,
+      datePublished: item.pubDate ? new Date(item.pubDate) : undefined,
+    });
+  }
 
-// const VergeTransformer: TransformerType = async (url: string) => {
-//   const parser = new Parser({
-//     customFields: {
-//       item: ["summary"],
-//     },
-//   });
-//   const feed = await parser.parseURL(url);
+  return items;
+};
 
-//   return feed.items.map((item) => {
-//     return {
-//       source: "The Verge",
+const NPRTransformer: TransformerType = async (url: string) => {
+  const parser = new Parser();
+  const feed = await parser.parseURL(url);
+  const items: RawPost[] = [];
 
-//       title: item.title ?? "Untitled",
-//       link: item.link ?? null,
-//       description: item.summary ?? null, // TODO: Handle special chars: —&#160;asking the same question. And I’m afraid I’m going to keep being here, week in, week out, until I have a T1 Phone in [&#8230;]"
-//       image: null,
-//     };
-//   });
-// };
+  for (const item of feed.items) {
+    const title = item.title?.trim();
+    const link = item.link?.trim();
+    const description = (item.contentSnippet ?? item.content)?.trim();
 
-// const HackerNewsTransformer: TransformerType = async (url: string) => {
-//   const parser = new Parser();
-//   const feed = await parser.parseURL(url);
+    // Ignore posts without title + description, or without link
+    if (!title || !description) continue;
+    if (!link) continue;
 
-//   return feed.items.map((item) => {
-//     return {
-//       source: "Hacker News",
+    const categories = (item.categories ?? []).map((cat) => cat["_"]); // TODO: Use categories?
 
-//       title: item.title ?? "Untitled",
-//       link: item.link ?? null,
-//       description: item.content ?? null,
-//       image: null,
-//     };
-//   });
-// };
+    items.push({
+      source: "NPR",
+      title,
+      link,
+      description,
+      image: null,
+      imageDescription: null,
+      categories: categories.length > 0 ? categories : null,
+      datePublished: item.pubDate ? new Date(item.pubDate) : undefined,
+    });
+  }
+
+  return items;
+};
+
+const WiredTransformer: TransformerType = async (url: string) => {
+  const parser = new Parser({
+    customFields: {
+      item: ["media:thumbnail"],
+    },
+  });
+  const feed = await parser.parseURL(url);
+  const items: RawPost[] = [];
+
+  for (const item of feed.items) {
+    const title = item.title?.trim();
+    const link = item.link?.trim();
+    const description = (item.contentSnippet ?? item.content)?.trim();
+
+    // Ignore posts without title + description, or without link
+    if (!title || !description) continue;
+    if (!link) continue;
+
+    const categories = (item.categories ?? []).map((cat) => cat["_"]); // TODO: Use categories?
+    const image = item["media:thumbnail"]
+      ? item["media:thumbnail"].$.url
+      : null;
+
+    items.push({
+      source: "Wired",
+      title,
+      link,
+      description,
+      image,
+      imageDescription: null,
+      categories: categories.length > 0 ? categories : null,
+      datePublished: item.pubDate ? new Date(item.pubDate) : undefined,
+    });
+  }
+
+  return items;
+};
+
+const HackerNewsTransformer: TransformerType = async (url: string) => {
+  const parser = new Parser();
+  const feed = await parser.parseURL(url);
+  const items: RawPost[] = [];
+
+  for (const item of feed.items) {
+    const title = item.title?.trim();
+    const link = item.link?.trim();
+    const description = (item.contentSnippet ?? item.content)?.trim();
+
+    // Ignore posts without title + description, or without link
+    if (!title || !description) continue;
+    if (!link) continue;
+
+    const categories = (item.categories ?? []).map((cat) => cat["_"]); // TODO: Use categories?
+
+    items.push({
+      source: "Hacker News",
+      title,
+      link,
+      description,
+      image: null,
+      imageDescription: null,
+      categories: categories.length > 0 ? categories : null,
+      datePublished: item.pubDate ? new Date(item.pubDate) : undefined,
+    });
+  }
+
+  return items;
+};
+
+const VergeTransformer: TransformerType = async (url: string) => {
+  const parser = new Parser({
+    customFields: {
+      item: ["summary"],
+    },
+  });
+  const feed = await parser.parseURL(url);
+  const items: RawPost[] = [];
+
+  for (const item of feed.items) {
+    const title = item.title?.trim();
+    const link = item.link?.trim();
+    const description = (item.summary ?? item.content)?.trim();
+
+    // Ignore posts without title + description, or without link
+    if (!title || !description) continue;
+    if (!link) continue;
+
+    const categories = (item.categories ?? []).map((cat) => cat["_"]); // TODO: Use categories?
+
+    items.push({
+      source: "The Verge",
+      title,
+      link,
+      description,
+      image: null,
+      imageDescription: null,
+      categories: categories.length > 0 ? categories : null,
+      datePublished: item.pubDate ? new Date(item.pubDate) : undefined,
+    });
+  }
+
+  return items;
+};
 
 export const Transformers = {
   NYTimes: NYTimesTransformer,
-  // CNBC: CNBCTransformer,
-  // Guardian: GuardianTransformer,
-  // BBC: BBCTransformer,
-  // NPR: NPRTransformer,
-  // Wired: WiredTransformer,
-  // Verge: VergeTransformer,
-  //   HackerNews: HackerNewsTransformer,
+  CNBC: CNBCTransformer,
+  Guardian: GuardianTransformer,
+  BBC: BBCTransformer,
+  NPR: NPRTransformer,
+  Wired: WiredTransformer,
+  Verge: VergeTransformer,
+  HackerNews: HackerNewsTransformer,
 } as const;
