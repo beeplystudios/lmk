@@ -10,6 +10,7 @@ import { Redirect } from "expo-router";
 import { useCallback, useRef, useState } from "react";
 import {
   Image,
+  Keyboard,
   Pressable,
   RefreshControl,
   ScrollView,
@@ -18,7 +19,6 @@ import {
   View,
 } from "react-native";
 import ActionSheet, { ActionSheetRef } from "react-native-actions-sheet";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 const CliqueCard = ({
   clique,
@@ -146,6 +146,8 @@ export default function CliquesScreen() {
   const create = useMutation(
     trpc.clique.create.mutationOptions({
       onMutate() {
+        Keyboard.dismiss();
+        setName("");
         actionSheetRef.current?.hide();
       },
       onSuccess() {
@@ -161,20 +163,21 @@ export default function CliquesScreen() {
   if (!user.data) return <Redirect href="/" />;
 
   return (
-    <SafeAreaView
+    <View
       className="text-white p-4 min-h-screen"
       style={{ backgroundColor: "#18181b" }}
     >
       <ScrollView
-        stickyHeaderIndices={[1]}
         refreshControl={
           <RefreshControl
             refreshing={cliques.isLoading}
             onRefresh={onRefresh}
           />
         }
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
       >
-        <View className="flex items-center justify-between gap-4 flex-row mb-8">
+        <View className="flex items-center justify-between gap-4 flex-row mb-8 pt-24">
           <Text className="text-white font-bold font-serif text-4xl">
             Cliques
           </Text>
@@ -188,15 +191,15 @@ export default function CliquesScreen() {
           {/* <Button title="Logout" onPress={() => signOut.mutate()} /> */}
         </View>
 
-        <View className="pb-24 flex flex-col gap-4 items-center justify-center ">
-          <Pressable
-            onPress={() => actionSheetRef.current?.show()}
-            className="bg-[#CEF5E3] w-full py-3 gap-2 flex flex-row items-center justify-center rounded-full shadow-sm border-[0.0125rem] border-blue-100 active:scale-95"
-            // className="w-full rounded-md bg-zinc-600 flex items-center justify-center py-4"
-          >
-            <Text className=" text-black font-medium ">Add Clique</Text>
-          </Pressable>
+        <Pressable
+          onPress={() => actionSheetRef.current?.show()}
+          className="bg-[#CEF5E3] mb-8 w-full py-3 gap-2 flex flex-row items-center justify-center rounded-full shadow-sm border-[0.0125rem] border-blue-100 active:scale-95"
+          // className="w-full rounded-md bg-zinc-600 flex items-center justify-center py-4"
+        >
+          <Text className=" text-black font-medium ">Add Clique</Text>
+        </Pressable>
 
+        <View className="pb-28 flex flex-col gap-4 items-center justify-center ">
           {/* <Text className="text-white">
             {JSON.stringify(cliques.data, null, 2)}
           </Text> */}
@@ -245,7 +248,9 @@ export default function CliquesScreen() {
 
                 <Pressable
                   className="bg-[#CEF5E3] py-3 gap-2 flex flex-row items-center justify-center rounded-full shadow-sm border-[0.0125rem] border-blue-100 active:scale-95"
-                  onPress={() => create.mutate({ name })}
+                  onPress={() => {
+                    return create.mutate({ name });
+                  }}
                 >
                   <Text className="font-semibold text-xl">Create</Text>
                   <Ionicons name="add" size={24} color="black" />
@@ -255,6 +260,6 @@ export default function CliquesScreen() {
           </ActionSheet>
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 }

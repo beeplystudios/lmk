@@ -10,10 +10,11 @@ import {
 import { Redirect } from "expo-router";
 import { useCallback, useState } from "react";
 import {
-  Animated,
   Image,
+  Keyboard,
   Pressable,
   RefreshControl,
+  ScrollView,
   Text,
   TextInput,
   View,
@@ -70,6 +71,7 @@ export default function AnimatedStickyHeader() {
 
   const create = useMutation(
     trpc.lmk.create.mutationOptions({
+      onMutate: () => Keyboard.dismiss(),
       onSettled: () => lmkList.refetch(),
     })
   );
@@ -82,7 +84,7 @@ export default function AnimatedStickyHeader() {
 
   return (
     <View className="p-4 min-h-screen" style={{ backgroundColor: "#18181b" }}>
-      <Animated.ScrollView
+      <ScrollView
         stickyHeaderIndices={[1]}
         showsVerticalScrollIndicator={false}
         refreshControl={
@@ -91,6 +93,7 @@ export default function AnimatedStickyHeader() {
             onRefresh={onRefresh}
           />
         }
+        keyboardShouldPersistTaps="handled"
       >
         <View>
           <View className="flex items-center justify-between gap-4 flex-row pt-24">
@@ -156,7 +159,7 @@ export default function AnimatedStickyHeader() {
             </Text>
           )}
         </View>
-      </Animated.ScrollView>
+      </ScrollView>
     </View>
   );
 }

@@ -34,6 +34,7 @@ export default function ExploreScreen() {
         refreshControl={
           <RefreshControl refreshing={data.isLoading} onRefresh={onRefresh} />
         }
+        keyboardShouldPersistTaps="handled"
       >
         <View className="flex items-center justify-between gap-4 flex-row mb-8 pt-24">
           <Text className="text-white font-bold font-serif text-4xl">
