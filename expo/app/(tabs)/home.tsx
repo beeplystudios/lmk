@@ -35,7 +35,8 @@ const CreateLmkForm: React.FC = () => {
         value={lmk}
         onChangeText={setLmk}
         placeholder="Let me know when..."
-        className="h-24 shadow-sm px-8 text-2xl grow text-zinc-200 bg-zinc-800 rounded-l-full border-[0.0125rem] border-zinc-300/70 shadow-xs placeholder:text-zinc-300"
+        placeholderClassName="text-zinc-200 text-2xl"
+        className="h-24 shadow-sm px-8 text-2xl grow text-zinc-200 bg-zinc-800 rounded-l-full border-[0.0125rem] border-zinc-300/70 shadow-xs"
       />
 
       <Pressable
