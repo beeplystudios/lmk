@@ -1,6 +1,6 @@
 import { and, desc, eq, inArray } from "drizzle-orm";
 import z from "zod";
-import { lmk, post } from "../db/schema";
+import { clique, cliqueUser, lmk, post } from "../db/schema";
 import { cliqueProcedure } from "../middleware/clique";
 import { INDEX_NAME, pc } from "../pinecone";
 import { router } from "../trpc";
@@ -13,6 +13,7 @@ export const lmkRouter = router({
         const newLmk = await tx
           .insert(lmk)
           .values({
+            creatorId: ctx.user.id,
             cliqueId: ctx.cliqueId,
             query: input.query,
           })
@@ -87,9 +88,17 @@ export const lmkRouter = router({
 
   explore: cliqueProcedure.query(async ({ ctx }) => {
     const lmks = await ctx.db
-      .select()
-      .from(lmk)
-      .where(eq(lmk.cliqueId, ctx.cliqueId))
+      .select({
+        id: lmk.id,
+        query: lmk.query,
+        cliqueId: lmk.cliqueId,
+        createdAt: lmk.createdAt,
+        creatorId: lmk.creatorId,
+      })
+      .from(cliqueUser)
+      .where(eq(cliqueUser.userId, ctx.user.id))
+      .innerJoin(clique, eq(clique.id, cliqueUser.cliqueId))
+      .innerJoin(lmk, eq(lmk.cliqueId, clique.id))
       .orderBy(desc(lmk.createdAt));
 
     const lmksWithQueryResults = await Promise.all(

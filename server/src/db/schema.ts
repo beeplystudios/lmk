@@ -21,6 +21,9 @@ export const lmk = pgTable("lmk", {
     .notNull()
     .references(() => clique.id, { onDelete: "cascade" }),
   createdAt: timestamp("created_at").defaultNow().notNull(),
+  creatorId: varchar("creator_id")
+    .notNull()
+    .references(() => user.id),
 });
 
 export const clique = pgTable("clique", {
@@ -28,6 +31,13 @@ export const clique = pgTable("clique", {
   name: varchar("name", { length: 255 }).notNull(),
   creatorId: varchar("creator_id").notNull(),
 });
+
+export const lmkRelations = relations(lmk, ({ one }) => ({
+  clique: one(clique, {
+    fields: [lmk.cliqueId],
+    references: [clique.id],
+  }),
+}));
 
 export const cliqueRelations = relations(clique, ({ many }) => ({
   members: many(cliqueUser),
