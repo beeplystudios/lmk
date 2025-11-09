@@ -40,7 +40,7 @@ export default function ExploreScreen() {
 
         <View className="pb-24 flex flex-col gap-4">
           <Text className="text-white font-medium font-serif text-xl -mb-2">
-            Your LMKs
+            You may be interested in:
           </Text>
           {headlines.map((headline) => (
             <View

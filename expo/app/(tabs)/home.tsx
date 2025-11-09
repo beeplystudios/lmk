@@ -102,7 +102,7 @@ export default function AnimatedStickyHeader() {
             {/* <Button title="Logout" onPress={() => signOut.mutate()} /> */}
           </View>
           <Text className="text-stone-50 mb-2 text-4xl font-semibold font-serif mt-10">
-            LetMeKnow!
+            Let Me Know!
           </Text>
         </View>
         <View className="pt-12">
