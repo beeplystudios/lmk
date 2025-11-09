@@ -8,11 +8,12 @@ import {
   useSuspenseQuery,
 } from "@tanstack/react-query";
 import { Redirect } from "expo-router";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import {
   Animated,
   Image,
   Pressable,
+  RefreshControl,
   Text,
   TextInput,
   View,
@@ -66,11 +67,16 @@ export default function AnimatedStickyHeader() {
   const [lmk, setLmk] = useState("");
   const user = useSuspenseQuery(trpc.me.queryOptions());
   const lmkList = useSuspenseQuery(trpc.lmk.list.queryOptions({}));
+
   const create = useMutation(
     trpc.lmk.create.mutationOptions({
       onSettled: () => lmkList.refetch(),
     })
   );
+
+  const onRefresh = useCallback(async () => {
+    await lmkList.refetch();
+  }, []);
 
   if (!user.data) return <Redirect href="/" />;
 
@@ -79,6 +85,12 @@ export default function AnimatedStickyHeader() {
       <Animated.ScrollView
         stickyHeaderIndices={[1]}
         showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl
+            refreshing={lmkList.isLoading}
+            onRefresh={onRefresh}
+          />
+        }
       >
         <View>
           <View className="flex items-center justify-between gap-4 flex-row pt-24">

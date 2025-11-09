@@ -3,15 +3,15 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { TRPCRouterOutputs } from "@lmk/server";
 import {
   useMutation,
-  useQuery,
   useQueryClient,
   useSuspenseQuery,
 } from "@tanstack/react-query";
 import { Redirect } from "expo-router";
-import { useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import {
   Image,
   Pressable,
+  RefreshControl,
   ScrollView,
   Text,
   TextInput,
@@ -141,7 +141,7 @@ export default function CliquesScreen() {
 
   const [name, setName] = useState("");
 
-  const cliques = useQuery(trpc.clique.list.queryOptions());
+  const cliques = useSuspenseQuery(trpc.clique.list.queryOptions());
 
   const create = useMutation(
     trpc.clique.create.mutationOptions({
@@ -154,6 +154,10 @@ export default function CliquesScreen() {
     })
   );
 
+  const onRefresh = useCallback(async () => {
+    await cliques.refetch();
+  }, []);
+
   if (!user.data) return <Redirect href="/" />;
 
   return (
@@ -161,7 +165,15 @@ export default function CliquesScreen() {
       className="text-white p-4 min-h-screen"
       style={{ backgroundColor: "#18181b" }}
     >
-      <ScrollView stickyHeaderIndices={[1]}>
+      <ScrollView
+        stickyHeaderIndices={[1]}
+        refreshControl={
+          <RefreshControl
+            refreshing={cliques.isLoading}
+            onRefresh={onRefresh}
+          />
+        }
+      >
         <View className="flex items-center justify-between gap-4 flex-row mb-8">
           <Text className="text-white font-bold font-serif text-4xl">
             Cliques
@@ -179,9 +191,10 @@ export default function CliquesScreen() {
         <View className="pb-24 flex flex-col gap-4 items-center justify-center ">
           <Pressable
             onPress={() => actionSheetRef.current?.show()}
-            className="w-full rounded-md bg-zinc-600 flex items-center justify-center py-4 absolute bottom-0"
+            className="bg-[#CEF5E3] w-full py-3 gap-2 flex flex-row items-center justify-center rounded-full shadow-sm border-[0.0125rem] border-blue-100 active:scale-95"
+            // className="w-full rounded-md bg-zinc-600 flex items-center justify-center py-4"
           >
-            <Text className=" text-white ">+ Add Clique</Text>
+            <Text className=" text-black font-medium ">Add Clique</Text>
           </Pressable>
 
           {/* <Text className="text-white">

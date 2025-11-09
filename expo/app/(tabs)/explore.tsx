@@ -1,7 +1,8 @@
 import { trpc } from "@/lib/trpc";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { Redirect } from "expo-router";
-import { Image, ScrollView, Text, View } from "react-native";
+import { useCallback } from "react";
+import { Image, RefreshControl, ScrollView, Text, View } from "react-native";
 
 const headlines = new Array(10).fill(0).map((_, idx) => ({
   id: idx + "",
@@ -17,6 +18,10 @@ export default function ExploreScreen() {
 
   const data = useSuspenseQuery(trpc.lmk.explore.queryOptions({}));
 
+  const onRefresh = useCallback(async () => {
+    await data.refetch();
+  }, []);
+
   if (!user.data) return <Redirect href="/" />;
 
   return (
@@ -24,7 +29,12 @@ export default function ExploreScreen() {
       className="text-white p-4 min-h-screen"
       style={{ backgroundColor: "#18181b" }}
     >
-      <ScrollView showsVerticalScrollIndicator={false}>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl refreshing={data.isLoading} onRefresh={onRefresh} />
+        }
+      >
         <View className="flex items-center justify-between gap-4 flex-row mb-8 pt-24">
           <Text className="text-white font-bold font-serif text-4xl">
             Explore
