@@ -17,15 +17,6 @@ import {
   View,
 } from "react-native";
 
-const headlines = new Array(10).fill(0).map((_, idx) => ({
-  id: idx + "",
-  headline: "Lorem ipsum dolor sit amet consectetur sit amet",
-  imgUrl:
-    "https://www.aljazeera.com/wp-content/uploads/2025/11/ap_690ad7a2c7478-1762318242.jpg?resize=730%2C410&quality=80",
-  description:
-    "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book",
-}));
-
 const CreateLmkForm: React.FC = () => {
   const [lmk, setLmk] = useState("");
   const queryClient = useQueryClient();
@@ -102,7 +93,7 @@ export default function AnimatedStickyHeader() {
             {/* <Button title="Logout" onPress={() => signOut.mutate()} /> */}
           </View>
           <Text className="text-stone-50 mb-2 text-4xl font-semibold font-serif mt-10">
-            LetMeKnow!
+            Let Me Know!
           </Text>
         </View>
         <View className="pt-12">
@@ -114,11 +105,13 @@ export default function AnimatedStickyHeader() {
               value={lmk}
               onChangeText={setLmk}
               placeholder="Let me know when..."
-              className="h-24 shadow-sm px-8 text-lg grow text-zinc-200 bg-zinc-800 rounded-l-full border-[0.0125rem] border-zinc-300/70 shadow-xs placeholder:text-zinc-300"
+              placeholderClassName="text-lg text-zinc-200"
+              style={{ lineHeight: 0 }}
+              className="h-16 shadow-sm px-8 text-lg grow text-zinc-200 bg-zinc-800 rounded-l-full border-[0.0125rem] border-zinc-300/70 border-r-0 shadow-xs"
             />
 
             <Pressable
-              className="h-24 bg-[#CEF5E3] border-[0.0125rem] w-max min-w-24 px-2 border-full flex items-center justify-center rounded-r-full active:scale-95"
+              className="h-16 bg-[#CEF5E3] border-[0.0125rem] w-20 px-2 border-full flex items-center justify-center rounded-r-full active:scale-95"
               onPress={() => {
                 console.log(lmk);
                 create.mutate({ query: lmk });
