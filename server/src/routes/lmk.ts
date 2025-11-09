@@ -60,6 +60,54 @@ export const lmkRouter = router({
     return lmksWithQueryResults;
   }),
 
+  explore: cliqueProcedure.query(async ({ ctx }) => {
+    const lmks = await ctx.db
+      .select()
+      .from(lmk)
+      .where(eq(lmk.cliqueId, ctx.cliqueId))
+      .orderBy(desc(lmk.createdAt));
+
+    const lmksWithQueryResults = await Promise.all(
+      lmks.map(async (lmkItem) => {
+        return {
+          ...lmkItem,
+          hits: await pc
+            .index(INDEX_NAME)
+            .namespace("posts")
+            .searchRecords({
+              query: {
+                inputs: { text: lmkItem.query },
+                topK: 10_000,
+              },
+            })
+            .then((res) =>
+              z
+                .array(
+                  z.object({
+                    _id: z.string(),
+                    _score: z.number(),
+                    fields: z.object({
+                      title: z.string(),
+                      description: z.string(),
+                      source: z.string(),
+                    }),
+                  })
+                )
+                .optional()
+                .default([])
+                .parse(res.result.hits.filter((hit) => hit._score > 0.2))
+                .slice(1)
+            ),
+        };
+      })
+    );
+
+    return lmksWithQueryResults
+      .filter((lmk) => lmk.hits.length > 0)
+      .flatMap((lmk) => lmk.hits)
+      .sort((a, b) => b._score - a._score);
+  }),
+
   delete: cliqueProcedure
     .input(z.object({ lmkId: z.cuid() }))
     .mutation(async ({ ctx, input }) => {
