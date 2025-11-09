@@ -13,8 +13,8 @@ export const POSTS = {
       "Katy Perry as Jessica in the film “Starstruck,” which is streaming on Peacock.",
     categories: ["Movies", "Space", "Entertainment"],
     image:
-      "https://static01.nyt.com/images/2024/06/05/multimedia/05starstruck-perry1/05starstruck-perry1-superJumbo.jpg",
-    datePublished: new Date("2024-06-05T10:00:00Z"),
+      "https://compote.slate.com/images/9da96c06-14be-4ede-8177-1083c942ac99.jpeg?crop=1560%2C1040%2Cx0%2Cy0",
+    datePublished: new Date("2025-11-05T10:00:00Z"),
     betterHeadline:
       "Katy Perry Makes Acting Debut in Starstruck as Aspiring Astronaut Getting a Space Ride on a Commercial Flight",
   },
@@ -30,8 +30,8 @@ export const POSTS = {
       "A doctor using an AI-powered diagnostic tool in a modern clinic setting.",
     categories: ["Health", "Technology", "AI"],
     image:
-      "https://media.wired.com/photos/64a1f2e5e4b0f3b5f8c9d123/191:100/w_1280,c_limit/New-AI-Tool-Revolutionizes-Healthcare-Diagnostics.jpg",
-    datePublished: new Date("2024-06-04T15:30:00Z"),
+      "https://assets.intersystems.com/dims4/default/51e5f91/2147483647/strip/true/crop/6951x4634+0+0/resize/1290x860!/quality/90/?url=http%3A%2F%2Finter-systems-brightspot.s3.amazonaws.com%2F35%2F45%2F0dfae8c14b51af282699ab00096f%2Fgettyimages-1326234214.jpg",
+    datePublished: new Date("2025-11-05T10:00:00Z"),
     betterHeadline:
       "Groundbreaking AI System Set to Transform Medical Diagnoses with Faster, More Accurate Results",
   },
