@@ -68,13 +68,24 @@ export const FEEDS: FeedWithTransformer[] = [
     url: "https://rss.nytimes.com/services/xml/rss/nyt/Upshot.xml",
     transformer: Transformers.NYTimes,
   },
-  // ["https://www.cnbc.com/id/100003114/device/rss/rss.html", Transformers.CNBC],
-  // ["https://www.theguardian.com/commentisfree/rss", Transformers.Guardian],
-  // ["https://feeds.bbci.co.uk/news/world/rss.xml", Transformers.BBC],
-  // ["https://feeds.npr.org/1001/rss.xml", Transformers.NPR],
-  // /* Tech */
-  // ["https://www.wired.com/feed/rss", Transformers.Wired],
-  // ["https://www.theverge.com/rss/index.xml", Transformers.Verge],
+  {
+    slug: "cnbc-top-news",
+    name: "CNBC - Top News & Analysis",
+    url: "https://www.cnbc.com/id/100003114/device/rss/rss.html",
+    transformer: Transformers.CNBC,
+  },
+  {
+    slug: "the-verge",
+    name: "The Verge",
+    url: "https://www.theverge.com/rss/index.xml",
+    transformer: Transformers.Verge,
+  },
+  {
+    slug: "hacker-news-best",
+    name: "Hacker News - Best",
+    url: "https://hnrss.org/best",
+    transformer: Transformers.HackerNews,
+  },
   //   ["https://hnrss.org/best"], // This RSS doesnt even have descriptions :(
   //   ["https://css-tricks.com/feed/"],
   //   ["http://feeds.feedburner.com/cantbowlcantthrow"], // Cricket Podcast
