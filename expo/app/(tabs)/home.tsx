@@ -36,11 +36,12 @@ const CreateLmkForm: React.FC = () => {
         onChangeText={setLmk}
         placeholder="Let me know when..."
         placeholderClassName="text-zinc-200 text-2xl"
-        className="h-24 shadow-sm px-8 text-2xl grow text-zinc-200 bg-zinc-800 rounded-l-full border-[0.0125rem] border-zinc-300/70 shadow-xs"
+        placeholderTextColor="#A1A1AA"
+        className="h-16 shadow-sm px-8 text-2xl grow text-zinc-200 bg-zinc-800 rounded-l-full border-[0.0125rem] border-zinc-300/70 shadow-xs"
       />
 
       <Pressable
-        className={`h-24 border-[0.0125rem] w-max min-w-24 px-2 border-full flex items-center justify-center rounded-r-full active:scale-95 ${
+        className={`h-16 border-[0.0125rem] w-max min-w-24 px-2 border-full flex items-center justify-center rounded-r-full active:scale-95 ${
           create.isPending || lmkList.isLoading || lmk.trim() === ""
             ? "bg-zinc-600"
             : "bg-[#CEF5E3]"
@@ -107,7 +108,6 @@ export default function AnimatedStickyHeader() {
               onChangeText={setLmk}
               placeholder="Let me know when..."
               placeholderClassName="text-lg text-zinc-200"
-              style={{ lineHeight: 0 }}
               className="h-16 shadow-sm px-8 text-lg grow text-zinc-200 bg-zinc-800 rounded-l-full border-[0.0125rem] border-zinc-300/70 border-r-0 shadow-xs"
             />
 
