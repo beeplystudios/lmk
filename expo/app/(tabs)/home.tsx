@@ -127,7 +127,7 @@ export default function AnimatedStickyHeader() {
           </View>
         </View>
 
-        <View className="flex flex-col gap-4 pb-32">
+        <View className="flex flex-col gap-2 pb-32">
           <Text className="text-white font-medium font-serif text-xl -mb-2">
             Your LMKs
           </Text>
