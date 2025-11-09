@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "136014269531",
+    "project_id": "lmk-notifications",
+    "storage_bucket": "lmk-notifications.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:136014269531:android:19759442167ee58b9f037e",
+        "android_client_info": {
+          "package_name": "lmk.beeplystudios.com"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCyzv2EWYN6VOXYo7-sJ52Re3nlF73XIKg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
