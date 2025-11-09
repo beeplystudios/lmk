@@ -1,5 +1,5 @@
 import "@/global.css";
-import { registerForPushNotificationsAsync } from "@/lib/notifications";
+import { registerForPushNotificationsAsync } from "@/lib/notify";
 import { queryClient, trpc } from "@/lib/trpc";
 import { QueryClientProvider, useMutation } from "@tanstack/react-query";
 import { Stack } from "expo-router";
