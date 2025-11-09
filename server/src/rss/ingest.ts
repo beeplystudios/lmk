@@ -3,7 +3,8 @@
 // ---(LLM + object mixing)--> IngestibleNewsPost --> Pinecone!
 
 import chalk from "chalk";
-import { eq } from "drizzle-orm";
+import { inArray } from "drizzle-orm";
+import { cluster } from "radash";
 import { db } from "../db";
 import { post } from "../db/schema";
 import { INDEX_NAME, pc } from "../pinecone";
@@ -78,24 +79,42 @@ export const ingestTransformer = async (
     batches[batches.length - 1].push({ post: upsertedPost, isNew });
   };
 
-  for (const rawPost of results) {
-    const newPost = await db
+  const existsList = new Map<
+    string,
+    {
+      id: string;
+      betterHeadline: string;
+      description: string | null;
+      title: string;
+      source: string;
+    }
+  >();
+
+  const promises = cluster(results, 50).map(async (batch) => {
+    const links = batch.map((post) => post.link);
+    const existingPosts = await db
       .select()
       .from(post)
-      .where(eq(post.link, rawPost.link))
-      .limit(1)
-      .then((res) => res[0]);
+      .where(inArray(post.link, links));
 
-    if (newPost) {
+    return existingPosts.map((p) => ({ link: p.link, p }));
+  });
+  const groups = await Promise.all(promises);
+  for (const group of groups)
+    for (const record of group) existsList.set(record.link, record.p);
+
+  for (const rawPost of results) {
+    const existingPost = existsList.get(rawPost.link);
+    if (existingPost) {
       console.log(chalk.dim("ingest: skipping existing post", rawPost.title));
 
       insertBatched(
         {
-          _id: newPost.id,
-          embed: newPost.betterHeadline,
-          description: newPost.description,
-          title: newPost.title,
-          source: newPost.source,
+          _id: existingPost.id,
+          embed: existingPost.betterHeadline,
+          description: existingPost.description,
+          title: existingPost.title,
+          source: existingPost.source,
         },
         false
       );

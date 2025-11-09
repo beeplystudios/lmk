@@ -29,6 +29,7 @@
     "drizzle-orm": "^0.44.7",
     "hono": "^4.10.4",
     "langchain": "^1.0.3",
+    "radash": "^12.1.1",
     "resend": "^6.4.2",
     "rss-parser": "^3.13.0",
     "zod": "^4.1.12"

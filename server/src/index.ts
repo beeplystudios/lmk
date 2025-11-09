@@ -1,4 +1,5 @@
 import { trpcServer } from "@hono/trpc-server";
+import chalk from "chalk";
 import { Hono } from "hono";
 import { auth } from "./auth";
 import { db } from "./db";
@@ -30,6 +31,6 @@ const server = Bun.serve({
   port: process.env.PORT ? parseInt(process.env.PORT) : 3000,
 });
 
-console.log(`lmk server running at ${server.url}`);
+console.log(chalk.green(`lmk server running at ${server.url}`));
 
 export type AppRouter = typeof appRouter;
