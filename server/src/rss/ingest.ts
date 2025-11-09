@@ -9,7 +9,7 @@ import { db } from "../db";
 import { post } from "../db/schema";
 import { INDEX_NAME, pc } from "../pinecone";
 import { expandRawNewsPost } from "./expand";
-import { FeedWithTransformer } from "./feeds";
+import { FEEDS, FeedWithTransformer } from "./feeds";
 
 /**
  * A news post directly extracted from an RSS feed.
@@ -20,6 +20,8 @@ export interface RawPost {
   source: string;
   /** If given by the author of the post, a blurb of what the source is about */
   description: string | null;
+  imageDescription: string | null;
+  categories: string[] | null;
 
   link: string;
   image: string | null;
@@ -156,6 +158,11 @@ export const ingestTransformer = async (
       source: rawPost.source,
     } satisfies IngestiblePost;
 
+    console.log(chalk.dim("ingest: --> notifying users of post"));
+    ctx.reportNewPost(upsertedPost).catch((err) => {
+      console.warn("ingest: failed to notify users of new post:", err);
+    });
+
     console.log(
       chalk.green(
         "ingest: --> processed post",
@@ -208,4 +215,15 @@ export const ingestTransformer = async (
       `ingest: --> created records=${createdRecords} total records=${await totalRecords}`
     )
   );
+};
+
+export const ingestAllFeeds = async (ctx: IngestCtx) => {
+  console.log(chalk.blue("ingest: starting full ingestion run..."));
+  for (const feed of FEEDS) {
+    try {
+      await ingestTransformer(ctx, feed);
+    } catch (err) {
+      console.error(`ingest: error ingesting feed '${feed.slug}':`, err);
+    }
+  }
 };

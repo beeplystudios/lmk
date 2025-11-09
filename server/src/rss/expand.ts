@@ -12,6 +12,7 @@ export const EXAMPLE_RAW_NEWS_POST = [
     link: "https://www.nytimes.com/2025/11/07/us/politics/biden-trump-omaha-nebraska.html",
     image:
       "https://static01.nyt.com/images/2025/11/07/multimedia/pol-biden-bclm/pol-biden-bclm-mediumSquareAt3X.jpg",
+    imageDescription: null,
     datePublished: new Date("2025-11-07T12:00:00Z"),
   },
   {
@@ -23,6 +24,7 @@ export const EXAMPLE_RAW_NEWS_POST = [
     link: "https://www.nytimes.com/2025/11/07/us/politics/portland-oregon-national-guard.html",
     image:
       "https://static01.nyt.com/images/2025/11/03/multimedia/00nat-portland-rulingHFO/03trump-blog-portland-wzbh-mediumSquareAt3X.jpg",
+    imageDescription: null,
     datePublished: new Date("2025-11-07T12:00:00Z"),
   },
   {
@@ -34,6 +36,7 @@ export const EXAMPLE_RAW_NEWS_POST = [
     link: "https://www.nytimes.com/2025/11/07/us/politics/trump-michael-mcmahon-pardon.html",
     image:
       "https://static01.nyt.com/images/2025/11/07/multimedia/dc-pardons2-qcbj/dc-pardons2-qcbj-mediumSquareAt3X.jpg",
+    imageDescription: null,
     datePublished: new Date("2025-11-07T12:00:00Z"),
   },
 ] satisfies RawPost[];

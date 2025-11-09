@@ -4,14 +4,13 @@ const resend = new Resend(process.env.RESEND_API_KEY!);
 
 type EmailData = { subject: string; html: string };
 
-export const MatchEmail = (
-  lmk: string,
+export const createMatchEmail = (
   headline: string,
   link: string,
   source: string
 ) => {
   return {
-    subject: `New match for your LMK: ${headline}`,
+    subject: `LMK: ${headline}`,
     html: `
 <!DOCTYPE html>
 <html xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
@@ -342,18 +341,14 @@ export const MatchEmail = (
   };
 };
 
-const sendEmail = async (target: string, email: EmailData) => {
-  const { data, error } = await resend.emails.send({
+export const sendEmail = async (target: string, email: EmailData) => {
+  const { error } = await resend.emails.send({
     from: "LMK <noreply@beeplystudios.com>",
     to: [target],
     ...email,
   });
 
-  if (error) {
-    return console.error({ error });
-  }
-
-  console.log({ data });
+  if (error) throw error;
 };
 
 // const emailData = MatchEmail(
