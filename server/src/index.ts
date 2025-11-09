@@ -2,10 +2,10 @@ import { trpcServer } from "@hono/trpc-server";
 import chalk from "chalk";
 import { Hono } from "hono";
 import { auth } from "./auth";
+import { batchNotifyPost } from "./batch";
 import { db } from "./db";
 import "./pinecone";
 import { checkNewPost, NotificationItem } from "./pinecone";
-import { createMatchEmail, sendEmail } from "./resend";
 import { appRouter } from "./routes";
 import { ingestAllFeeds } from "./rss/ingest";
 
@@ -37,7 +37,7 @@ const server = Bun.serve({
 
 console.log(chalk.green(`lmk server running at ${server.url}`));
 
-let CHECK_INTERVAL = 60 * 60; // 1 hour
+const CHECK_INTERVAL = 60 * 60; // 1 hour
 if (process.env.DO_INGEST)
   setInterval(() => {
     let currentBatch: NotificationItem[] = [];
@@ -57,30 +57,7 @@ if (process.env.DO_INGEST)
         if (currentBatch.length >= 50) {
           const batchToSend = currentBatch;
           currentBatch = [];
-
-          console.log(
-            chalk.green(
-              `notification: sending batch of ${batchToSend.length} notifications...`
-            )
-          );
-
-          // send emails
-          for (const notification of batchToSend) {
-            console.log(
-              chalk.dim(
-                `notification: --> sending email notification to ${notification.to}...`
-              )
-            );
-
-            await sendEmail(
-              notification.email,
-              createMatchEmail(
-                notification.title,
-                notification.link,
-                notification.source
-              )
-            );
-          }
+          await batchNotifyPost(batchToSend);
         }
       },
     });
