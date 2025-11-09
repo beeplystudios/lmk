@@ -33,7 +33,7 @@ export const lmkRouter = router({
     const lmks = await ctx.db
       .select()
       .from(lmk)
-      .where(eq(lmk.cliqueId, ctx.cliqueId))
+      .where(eq(lmk.creatorId, ctx.user.id))
       .orderBy(desc(lmk.createdAt));
 
     const lmksWithQueryResults = await Promise.all(
