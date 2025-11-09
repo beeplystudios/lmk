@@ -1,6 +1,6 @@
-import { and, desc, eq } from "drizzle-orm";
+import { and, desc, eq, inArray } from "drizzle-orm";
 import z from "zod";
-import { lmk } from "../db/schema";
+import { lmk, post } from "../db/schema";
 import { cliqueProcedure } from "../middleware/clique";
 import { INDEX_NAME, pc } from "../pinecone";
 import { router } from "../trpc";
@@ -109,10 +109,21 @@ export const lmkRouter = router({
       })
     );
 
-    return lmksWithQueryResults
+    const flattened = lmksWithQueryResults
       .filter((lmk) => lmk.hits.length > 0)
-      .flatMap((lmk) => lmk.hits)
-      .sort((a, b) => b._score - a._score);
+      .flatMap((lmk) => lmk.hits);
+
+    const posts = await ctx.db
+      .select()
+      .from(post)
+      .where(
+        inArray(
+          post.id,
+          flattened.map((lmk) => lmk._id)
+        )
+      );
+
+    return posts;
   }),
 
   delete: cliqueProcedure

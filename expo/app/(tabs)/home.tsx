@@ -139,7 +139,7 @@ export default function AnimatedStickyHeader() {
                 className="relative shadow-sm flex flex-col p-4 gap-4 bg-zinc-800 rounded-2xl my-2"
               >
                 <View className="flex-[3] flex flex-row items-center justify-between gap-1">
-                  <View>
+                  <View className="flex-[4]">
                     <Text className="font-serif text-stone-400">
                       {lmk.answered
                         ? "You asked us to you let you know when..."
@@ -149,15 +149,17 @@ export default function AnimatedStickyHeader() {
                       {lmk.query}
                     </Text>
                   </View>
-                  {lmk.answered ? (
-                    <Ionicons
-                      name="checkmark-circle"
-                      size={24}
-                      color="#86efac"
-                    />
-                  ) : (
-                    <Ionicons name="time" size={24} color="#fde68a" />
-                  )}
+                  <View className="">
+                    {lmk.answered ? (
+                      <Ionicons
+                        name="checkmark-circle"
+                        size={24}
+                        color="#86efac"
+                      />
+                    ) : (
+                      <Ionicons name="time" size={24} color="#fde68a" />
+                    )}
+                  </View>
                 </View>
                 {/* {
                   <Text className="text-white">
