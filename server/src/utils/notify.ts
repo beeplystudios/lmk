@@ -10,7 +10,6 @@ export const notify = async (notifs: ExpoPushMessage[]) => {
   chunks.forEach(async (chunk) => {
     try {
       let ticketChunk = await expo.sendPushNotificationsAsync(chunk);
-      //   console.log(ticketChunk);
       tickets.push(...ticketChunk);
       // NOTE: If a ticket contains an error code in ticket.details.error, you
       // must handle it appropriately. The error codes are listed in the Expo
@@ -20,6 +19,12 @@ export const notify = async (notifs: ExpoPushMessage[]) => {
       console.error(error);
     }
   });
+
+  for (const ticket of tickets) {
+    if (ticket.status === "error") {
+      throw new Error(`Notification error: ${ticket}`);
+    }
+  }
 
   ////  ticket's DeviceNotRegistered error indicates that the user does not accept notifs from us anymore
   //   tickets.forEach((ticket) => {
