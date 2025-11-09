@@ -42,7 +42,7 @@ export const LmkCard = ({
     <ReanimatedSwipeable
       overshootRight={false}
       friction={1.25}
-      renderRightActions={RightAction}
+      // renderRightActions={RightAction}
     >
       <View className="relative shadow-sm flex flex-col p-4 gap-4 bg-zinc-800 rounded-2xl my-2">
         <View className="flex-[3] flex flex-row items-center justify-between gap-1">
@@ -71,8 +71,7 @@ export const LmkCard = ({
           <View>
             {lmk.answer?.datePublished && (
               <Text className="text-stone-400 font-serif">
-                On {dateFormatter.format(new Date(lmk.answer.datePublished))}
-                :{" "}
+                On {dateFormatter.format(new Date(lmk.answer.datePublished))}:{" "}
               </Text>
             )}
 
