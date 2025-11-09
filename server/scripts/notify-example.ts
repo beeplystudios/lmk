@@ -3,6 +3,12 @@ import chalk from "chalk";
 import { checkNewPost, INDEX_NAME, pc } from "../src/pinecone";
 import { POSTS } from "./post";
 
+console.log(
+  chalk.blue(
+    "notify-example: this script simulates notifying users about a new post"
+  )
+);
+
 const post = POSTS[Bun.argv[2]] as (typeof POSTS)[keyof typeof POSTS];
 if (!post) {
   console.error(`notify-example: no post found with key=${Bun.argv[2]}`);
