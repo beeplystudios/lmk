@@ -81,6 +81,11 @@ export default function ExploreScreen() {
               </View>
             </View>
           ))}
+          {data.data.length === 0 && (
+            <Text className="text-zinc-400 italic">
+              You have no suggestions yet. Try creating an LMK!
+            </Text>
+          )}
         </View>
       </ScrollView>
     </View>
