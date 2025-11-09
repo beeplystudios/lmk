@@ -1,4 +1,5 @@
 import { trpcServer } from "@hono/trpc-server";
+import { inferRouterOutputs } from "@trpc/server";
 import chalk from "chalk";
 import { Hono } from "hono";
 import { auth } from "./auth";
@@ -64,3 +65,4 @@ if (process.env.DO_INGEST)
   }, CHECK_INTERVAL);
 
 export type AppRouter = typeof appRouter;
+export type TRPCRouterOutputs = inferRouterOutputs<AppRouter>;
