@@ -18,7 +18,7 @@ function RightAction(prog: SharedValue<number>, drag: SharedValue<number>) {
   return (
     <Reanimated.View
       style={styleAnimation}
-      className="transition-transform my-2 rounded-xl w-[70px] flex justify-center items-center bg-rose-500"
+      className="transition-transform my-2 mr-1 rounded-2xl w-[68px] flex justify-center items-center bg-rose-500"
     >
       <Ionicons name="trash-bin-outline" size={20} />
     </Reanimated.View>
@@ -33,7 +33,7 @@ export const LmkCard = ({
   <GestureHandlerRootView>
     <ReanimatedSwipeable
       overshootRight={false}
-      friction={1.5}
+      friction={1}
       renderRightActions={RightAction}
     >
       <View className="relative shadow-sm flex flex-col p-4 gap-4 bg-zinc-800 rounded-2xl my-2">
