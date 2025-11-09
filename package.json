@@ -11,7 +11,6 @@
   },
   "workspaces": [
     "expo",
-    "server",
-    "shared"
+    "server"
   ]
 }
