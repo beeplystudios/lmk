@@ -2,6 +2,7 @@ import { trpcServer } from "@hono/trpc-server";
 import { inferRouterOutputs } from "@trpc/server";
 import chalk from "chalk";
 import { Hono } from "hono";
+import { serveStatic } from "hono/bun";
 import { auth } from "./auth";
 import { batchNotifyPost } from "./batch";
 import { db } from "./db";
@@ -12,7 +13,7 @@ import { ingestAllFeeds } from "./rss/ingest";
 
 const app = new Hono();
 
-app.get("/", (c) => c.text("Hono!"));
+app.use("*", serveStatic({ root: "./static" }));
 app.use("/api/trpc/*", (context, next) =>
   trpcServer({
     endpoint: "/api/trpc",
