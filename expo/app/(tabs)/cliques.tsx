@@ -39,7 +39,7 @@ const CliqueCard = ({
         <View className="flex flex-row items-center gap-2">
           <Ionicons name="people" size={16} color="white" />
           <Text className="text-white">
-            {userCount} Member{userCount === 1 ? "" : "s"}
+            {users.data.length} Member{userCount === 1 ? "" : "s"}
           </Text>
           <Text className="text-white">
             {lmks.length} LMK{userCount === 1 ? "" : "s"}
@@ -84,7 +84,9 @@ const CliqueCard = ({
                   />
                   <Pressable
                     className="h-12 bg-[#CEF5E3] px-4 gap-2 flex flex-row items-center justify-center rounded-2xl shadow-sm border-[0.0125rem] border-blue-100 active:scale-95"
-                    onPress={() => invite.mutate({ email })}
+                    onPress={() =>
+                      invite.mutate({ cliqueId: clique.id, email })
+                    }
                   >
                     <Text className="font-semibold text-xl">Invite</Text>
                     {/* <Ionicons name="add" size={24} color="black" /> */}
