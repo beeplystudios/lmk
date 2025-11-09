@@ -1,7 +1,8 @@
 import { RawPost } from "@/src/rss/ingest";
 
 export const POSTS = {
-  // lmk "katy perry goes to space again"
+  // "katy perry goes to space again"
+  // `bun run scripts/post.ts katy_perry_goes_to_space_again`
   katy_perry_goes_to_space_again: {
     source: "NYTimes",
     title: "Katy Perry Goes to Space Again, This Time in 'Starstruck'",
@@ -17,19 +18,21 @@ export const POSTS = {
     betterHeadline:
       "Katy Perry Makes Acting Debut in Starstruck as Aspiring Astronaut Getting a Space Ride on a Commercial Flight",
   },
-  new_keyboard_doubling_as_a_vibrator_hits_on_market: {
-    source: "NYTimes",
-    title: "New Keyboard Doubling as a Vibrator Hits on Market",
+  // "new ai tool revolutionizes healthcare diagnostics"
+  // `bun run scripts/post.ts new_ai_tool_revolutionizes_healthcare_diagnostics`
+  new_ai_tool_revolutionizes_healthcare_diagnostics: {
+    source: "Wired",
+    title: "New AI Tool Revolutionizes Healthcare Diagnostics",
+    link: "https://www.wired.com/story/new-ai-tool-revolutionizes-healthcare-diagnostics/",
     description:
-      "The latest innovation in personal computing comes with unexpected features that are sure to excite users.",
-    link: "https://www.nytimes.com/2024/05/20/technology/vibrating-keyboard.html",
+      "A groundbreaking AI system is set to transform the way medical diagnoses are made, promising faster and more accurate results.",
     imageDescription:
-      "The new vibrating keyboard model VibeType 3000, designed for both typing and personal pleasure.",
-    categories: ["Technology", "Gadgets", "Lifestyle"],
+      "A doctor using an AI-powered diagnostic tool in a modern clinic setting.",
+    categories: ["Health", "Technology", "AI"],
     image:
-      "https://static01.nyt.com/images/2024/05/20/multimedia/20vibetypes-1/20vibetypes-1-superJumbo.jpg",
-    datePublished: new Date("2024-05-20T15:30:00Z"),
+      "https://media.wired.com/photos/64a1f2e5e4b0f3b5f8c9d123/191:100/w_1280,c_limit/New-AI-Tool-Revolutionizes-Healthcare-Diagnostics.jpg",
+    datePublished: new Date("2024-06-04T15:30:00Z"),
     betterHeadline:
-      "VibeType 3000: The New Keyboard That Also Functions as a Vibrator Hits the Market",
+      "Groundbreaking AI System Set to Transform Medical Diagnoses with Faster, More Accurate Results",
   },
 } satisfies Record<string, RawPost & { betterHeadline: string }>;
