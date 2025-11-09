@@ -31,6 +31,15 @@ export default function TabLayout() {
           ),
         })}
       </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="cliques">
+        <Label>Cliques</Label>
+        {Platform.select({
+          ios: <Icon sf="person.3.fill" />,
+          android: (
+            <Icon src={<VectorIcon family={MaterialIcons} name="people" />} />
+          ),
+        })}
+      </NativeTabs.Trigger>
     </NativeTabs>
   );
 }
