@@ -2,7 +2,7 @@ import { Pinecone } from "@pinecone-database/pinecone";
 import chalk from "chalk";
 import { eq, inArray } from "drizzle-orm";
 import { db } from "./db";
-import { clique, cliqueUser, lmk, post, user } from "./db/schema";
+import { cliqueUser, lmk, post, user } from "./db/schema";
 import { IngestiblePost } from "./rss/ingest";
 
 const PINECONE_API_KEY = process.env.PINECONE_API_KEY;
@@ -44,7 +44,7 @@ if (!index) {
 export interface NotificationItem {
   to: string;
   email: string;
-  data: string;
+  data: Record<string, unknown>;
   body: string;
   title: string;
   link: string;
@@ -56,19 +56,28 @@ export interface NotificationItem {
  * the new post is relevant to them.
  */
 export const checkNewPost = async (
-  newPost: IngestiblePost
+  newPost: IngestiblePost,
+  // Used for testing purposes to insert a faux database post
+  defaultDatabasePost?: {
+    title: string;
+    description: string;
+    link: string;
+    source: string;
+  }
 ): Promise<NotificationItem[]> => {
-  const databasePost = await db
-    .select({
-      description: post.description,
-      title: post.title,
-      link: post.link,
-      source: post.source,
-    })
-    .from(post)
-    .where(eq(lmk.id, newPost._id))
-    .limit(1)
-    .then((res) => res[0]);
+  const databasePost = defaultDatabasePost
+    ? defaultDatabasePost
+    : await db
+        .select({
+          description: post.description,
+          title: post.title,
+          link: post.link,
+          source: post.source,
+        })
+        .from(post)
+        .where(eq(lmk.id, newPost._id))
+        .limit(1)
+        .then((res) => res[0]);
 
   let allLmkIds: string[] = [];
 
@@ -89,10 +98,12 @@ export const checkNewPost = async (
 
     allLmkIds = allLmkIds.concat(resultsOverConfidence.map((hit) => hit._id));
 
-    await pc
-      .index(INDEX_NAME)
-      .namespace("lmks")
-      .deleteMany(resultsOverConfidence.map((hit) => hit._id));
+    // do not remove records if we are testing with a faux database post
+    if (resultsOverConfidence.length > 0 && !databasePost)
+      await pc
+        .index(INDEX_NAME)
+        .namespace("lmks")
+        .deleteMany(resultsOverConfidence.map((hit) => hit._id));
 
     if (resultsOverConfidence.length === 10) {
       console.log(
@@ -106,9 +117,9 @@ export const checkNewPost = async (
   const allLmks = await db
     .select({ token: user.token, email: user.email })
     .from(lmk)
-    .innerJoin(user, eq(user.id, cliqueUser.userId))
     .innerJoin(cliqueUser, eq(lmk.cliqueId, cliqueUser.cliqueId))
-    .innerJoin(clique, eq(clique.id, lmk.cliqueId))
+    .innerJoin(user, eq(user.id, cliqueUser.userId))
+    // .innerJoin(clique, eq(clique.id, lmk.cliqueId))
     .where(inArray(lmk.id, allLmkIds));
 
   const notificationsBatch: NotificationItem[] = [];
@@ -117,10 +128,10 @@ export const checkNewPost = async (
     notificationsBatch.push({
       to: lmk.token,
       email: lmk.email,
-      data: JSON.stringify({
+      data: {
         type: "NEW_RELEVANT_POST",
         postId: newPost._id,
-      }),
+      },
       body: databasePost.description,
       title: `Letting You Know: ${databasePost.title}`,
       link: databasePost.link,
@@ -130,13 +141,13 @@ export const checkNewPost = async (
 
   console.log(
     chalk.blue(
-      `notifications: sending notifications batch. count=${notificationsBatch.length}`
+      `notifications: found notifications batch. count=${notificationsBatch.length}`
     )
   );
-  for (const notification of notificationsBatch.splice(0, 10)) {
+  for (const notification of [...notificationsBatch].splice(0, 10)) {
     console.log(
       chalk.dim(
-        `notifications: --> token=${notification.to}, title="${notification.title}"`
+        `notifications: --> token=${notification.to}, email=${notification.email}, title="${notification.title}"`
       )
     );
   }
