@@ -1,6 +1,13 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
 import type { TRPCRouterOutputs } from "@lmk/server";
-import { Text, View } from "react-native";
+import * as WebBrowser from "expo-web-browser";
+import { Pressable, Text, View } from "react-native";
+
+const dateFormatter = new Intl.DateTimeFormat("en", {
+  year: "numeric",
+  month: "long",
+  day: "numeric",
+});
 
 export const LmkCard = ({
   lmk,
@@ -35,11 +42,22 @@ export const LmkCard = ({
                 } */}
     {lmk.answered && (
       <View>
-        <Text className="text-stone-400 font-serif">
-          On January 1st, 2026:{" "}
-        </Text>
-        <View className="flex flex-row gap-4 my-4">
-          {/* <Image
+        {lmk.answer?.datePublished && (
+          <Text className="text-stone-400 font-serif">
+            On {dateFormatter.format(new Date(lmk.answer.datePublished))}:{" "}
+          </Text>
+        )}
+
+        <Pressable
+          onPress={() => {
+            const link = lmk.answer?.link ?? "";
+            if (link) {
+              WebBrowser.openBrowserAsync(link);
+            }
+          }}
+        >
+          <View className="flex flex-row gap-4 my-4">
+            {/* <Image
                         source={{
                           uri: "https://www.aljazeera.com/wp-content/uploads/2025/11/ap_690ad7a2c7478-1762318242.jpg?resize=730%2C410&quality=80",
                           width: 100,
@@ -47,18 +65,17 @@ export const LmkCard = ({
                         }}
                         className="flex-1 h-full object-cover rounded-md"
                       /> */}
-          <View className="flex-[2]">
-            <Text className="text-white text-lg font-medium font-serif">
-              {lmk.answer?.fields.title}
-            </Text>
-            <Text className="text-zinc-400">
-              {lmk.answer?.fields.description}
-            </Text>
-            <Text className="text-stone-400 mt-2">
-              From the {lmk.answer?.fields.source}
-            </Text>
+            <View className="flex-[2]">
+              <Text className="text-white text-lg font-medium font-serif">
+                {lmk.answer?.title}
+              </Text>
+              <Text className="text-zinc-400">{lmk.answer?.description}</Text>
+              <Text className="text-stone-400 mt-2">
+                From {lmk.answer?.source}
+              </Text>
+            </View>
           </View>
-        </View>
+        </Pressable>
       </View>
     )}
   </View>

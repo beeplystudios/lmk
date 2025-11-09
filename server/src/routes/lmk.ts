@@ -48,8 +48,8 @@ export const lmkRouter = router({
                 topK: 1,
               },
             })
-            .then((res) =>
-              z
+            .then(async (res) => {
+              const data = await z
                 .object({
                   fields: z.object({
                     title: z.string(),
@@ -58,8 +58,26 @@ export const lmkRouter = router({
                   }),
                 })
                 .optional()
-                .parse(res.result.hits.filter((hit) => hit._score > 0.3).at(0))
-            ),
+                .parse(res.result.hits.filter((hit) => hit._score > 0.3).at(0));
+
+              const fullPost = data
+                ? (
+                    await ctx.db
+                      .select()
+                      .from(post)
+                      .where(
+                        eq(
+                          post.id,
+                          res.result.hits
+                            .filter((hit) => hit._score > 0.3)
+                            .at(0)!._id
+                        )
+                      )
+                  )[0]
+                : undefined;
+
+              return fullPost;
+            }),
         };
       })
     );
